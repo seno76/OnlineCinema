@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Онлайн Кинотеатр</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: #444;
+            padding: 10px;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+        }
+        .search-bar {
+            text-align: center;
+            margin: 20px;
+        }
+        .search-bar input {
+            padding: 10px;
+            width: 300px;
+        }
+        .premieres, .movies {
+            margin: 20px;
+        }
+        .premieres h2, .movies h2 {
+            color: #333;
+        }
+        .movie-list {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .movie-item {
+            background-color: #fff;
+            margin: 10px;
+            padding: 10px;
+            width: 200px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>LORDFILM</h1>
+</header>
+<nav>
+    <a href="#">ФИЛЬМЫ</a>
+    <a href="#">СЕРИАЛЫ</a>
+    <a href="#">МУЛЬТФИЛЬМЫ</a>
+</nav>
+<div class="search-bar">
+    <input type="text" placeholder="Введите название">
+    <button>ВОЙТИ</button>
+</div>
+<section class="premieres">
+    <h2>Премьеры</h2>
+    <div class="movie-list">
+        <div class="movie-item">
+            <h3>Ущелье</h3>
+            <p>КП 7.387</p>
+            <p>IMOB 8</p>
+        </div>
+        <div class="movie-item">
+            <h3>Капитан Америка: Новый мир</h3>
+            <p>КП 7.9</p>
+            <p>IMOB 8.1</p>
+        </div>
+    </div>
+</section>
+<section class="movies">
+    <h2>ФИЛЬМЫ</h2>
+    <div class="movie-list">
+        <div class="movie-item">
+            <h3>Веном 2</h3>
+            <p>КП 6.1</p>
+            <p>IMOB 6.1</p>
+        </div>
+        <div class="movie-item">
+            <h3>Дюна</h3>
+            <p>КП 8.0</p>
+            <p>IMOB 8.4</p>
+        </div>
+    </div>
+</section>
+</body>
+</html>
