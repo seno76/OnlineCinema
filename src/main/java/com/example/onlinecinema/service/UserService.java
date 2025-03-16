@@ -2,11 +2,15 @@ package com.example.onlinecinema.service;
 
 import com.example.onlinecinema.model.User;
 import com.example.onlinecinema.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class UserService {
 
     @Autowired

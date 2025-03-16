@@ -1,53 +1,32 @@
 package com.example.onlinecinema.model;
 
+import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
+@Entity
+@Table(name = "userPreferences")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserPreferences {
 
-    private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "userPreferencesId")
+    private Long userPreferencesId;
+
+    @OneToOne
+    @JoinColumn(name = "userId", nullable = false, unique = true)
     private User user;
-    private Movie movie;
-    private Series series;
+
+    @OneToMany(mappedBy = "userPreferences", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserPreferencesMovie> movies;
+
+    @OneToMany(mappedBy = "userPreferences", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserPreferencesSeries> series;
+
+    @Column(name = "addedAt")
     private LocalDateTime addedAt = LocalDateTime.now();
-
-    // Геттеры и сеттеры
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Movie getMovie() {
-        return movie;
-    }
-
-    public void setMovie(Movie movie) {
-        this.movie = movie;
-    }
-
-    public Series getSeries() {
-        return series;
-    }
-
-    public void setSeries(Series series) {
-        this.series = series;
-    }
-
-    public LocalDateTime getAddedAt() {
-        return addedAt;
-    }
-
-    public void setAddedAt(LocalDateTime addedAt) {
-        this.addedAt = addedAt;
-    }
 }

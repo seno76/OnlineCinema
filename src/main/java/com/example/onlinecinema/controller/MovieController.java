@@ -24,9 +24,10 @@ public class MovieController {
         return movieService.getMovieById(id);
     }
 
-    @PostMapping
-    public Movie createMovie(@RequestBody Movie movie) {
-        return movieService.saveMovie(movie);
+    @PostMapping("/create")
+    public String createMovie(@RequestBody Movie movie) {
+        movieService.saveMovie(movie);
+        return "redirect:/";
     }
 
     @DeleteMapping("/{id}")

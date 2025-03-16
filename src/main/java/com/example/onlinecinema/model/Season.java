@@ -1,53 +1,27 @@
 package com.example.onlinecinema.model;
 
+import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "season")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Season {
-
-    private Long id;
-    private Series series;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "seasonId")
+    private Long seasonId;
+    @ManyToOne // Много сезонов могут относиться к одному сериалу
+    @JoinColumn(name = "seriesId", nullable = false) // Ссылаемся на сериал
+    private Series seriesId;
+    @Column(name = "number")
     private int number;
+    @Column(name = "title")
     private String title;
+    @Column(name = "createdAt")
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Геттеры и сеттеры
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Series getSeries() {
-        return series;
-    }
-
-    public void setSeries(Series series) {
-        this.series = series;
-    }
-
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 }

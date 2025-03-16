@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -52,22 +52,50 @@
             width: 200px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px;
+            width: 200px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+        .card img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        .card h3 {
+            margin: 8px 0;
+        }
+        .card p {
+            margin: 4px 0;
+            color: #555;
+        }
     </style>
 </head>
 <body>
 <header>
-    <h1>LORDFILM</h1>
+    <h1>ONLINE CINEMA</h1>
 </header>
 <nav>
-    <a href="#">ФИЛЬМЫ</a>
-    <a href="#">СЕРИАЛЫ</a>
-    <a href="#">МУЛЬТФИЛЬМЫ</a>
+    <a href="movies">ФИЛЬМЫ</a>
+    <a href="series">СЕРИАЛЫ</a>
+    <a href="cartoon">МУЛЬТФИЛЬМЫ</a>
 </nav>
 <div class="search-bar">
     <input type="text" placeholder="Введите название">
-    <button>ВОЙТИ</button>
+    <button>Поиск</button>
 </div>
 <section class="premieres">
+    <div th:each="movie : ${movies}">
+        <div class="card">
+            <h3 th:text="${movie.title}"></h3>
+            <p th:text="${movie.rating}"></p>
+            <p><strong>Price:</strong> <span th:text="${product.price}"></span></p>
+            <a th:href="@{/movie/{id}(id=${movie.movieId})}">Подробнее</a>
+        </div>
+    </div>
     <h2>Премьеры</h2>
     <div class="movie-list">
         <div class="movie-item">
@@ -97,5 +125,18 @@
         </div>
     </div>
 </section>
+<h3>Создать новый фильм</h3>
+<form action="/create" method="post">
+    Название фильма: <input type="text" name="title"/><br><br>
+    Описание: <input type="text" name="description"/><br><br>
+    Жанр: <input type="text" name="genre"/><br><br>
+    Год: <input type="text" name="year"/><br><br>
+    Рейтинг: <input type="text" name="rating"/><br><br>
+    URL Картинки: <input type="text" name="posterUrl"/><br><br>
+    URL Фильма: <input type="text" name="movieUrl"/><br><br>
+    Продолжительность: <input type="text" name="duration"/><br><br>
+    Фильм/Мультфильм: <input type="text" name="isCartoon"/><br><br>
+    <input type="submit" value="Добавить фильм">
+</form>
 </body>
 </html>

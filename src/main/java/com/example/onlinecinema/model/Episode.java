@@ -1,71 +1,30 @@
 package com.example.onlinecinema.model;
 
+import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "episode")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Episode {
-
-    private Long id;
-    private Season season;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "episodeId")
+    private Long episodeId;
+    @ManyToOne // Много эпизодов могут относиться к одному сезону
+    @JoinColumn(name = "seasonId", nullable = false) // Ссылаемся на сезон
+    private Season seasonId;
+    @Column(name = "title")
     private String title;
+    @Column(name = "description", columnDefinition = "text")
     private String description;
+    @Column(name = "duration")
     private int duration;
+    @Column(name = "videoUrl")
     private String videoUrl;
+    @Column(name = "createdAt")
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    // Геттеры и сеттеры
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Season getSeason() {
-        return season;
-    }
-
-    public void setSeason(Season season) {
-        this.season = season;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
-
-    public void setDuration(int duration) {
-        this.duration = duration;
-    }
-
-    public String getVideoUrl() {
-        return videoUrl;
-    }
-
-    public void setVideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 }
