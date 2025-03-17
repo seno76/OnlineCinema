@@ -51,7 +51,7 @@ public class MovieServiceTest {
     public void testGetMovieById() {
         // Arrange
         Movie movie = new Movie();
-        movie.setId(1L);
+        movie.setMovieId(1L);
         movie.setTitle("Inception");
 
         when(movieRepository.findById(1L)).thenReturn(Optional.of(movie));
@@ -70,15 +70,14 @@ public class MovieServiceTest {
         Movie movie = new Movie();
         movie.setTitle("Inception");
 
-        when(movieRepository.save(movie)).thenReturn(movie);
+        // Настройка mock-репозитория
+        doNothing().when(movieRepository).save(movie);
 
         // Act
-        Movie savedMovie = movieService.saveMovie(movie);
+        movieService.saveMovie(movie);
 
         // Assert
-        assertNotNull(savedMovie);
-        assertEquals("Inception", savedMovie.getTitle());
-        verify(movieRepository, times(1)).save(movie);
+        verify(movieRepository, times(1)).save(movie); // Проверяем, что метод save был вызван 1 раз
     }
 
     @Test

@@ -51,7 +51,7 @@ public class SeriesServiceTest {
     public void testGetSeriesById() {
         // Arrange
         Series series = new Series();
-        series.setId(1L);
+        series.setSeriesId(1L);
         series.setTitle("Breaking Bad");
 
         when(seriesRepository.findById(1L)).thenReturn(Optional.of(series));

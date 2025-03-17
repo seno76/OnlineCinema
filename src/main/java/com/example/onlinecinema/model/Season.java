@@ -3,6 +3,7 @@ package com.example.onlinecinema.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.*;
 
 @Entity
 @Table(name = "season")
@@ -23,5 +24,4 @@ public class Season {
     private String title;
     @Column(name = "createdAt")
     private LocalDateTime createdAt = LocalDateTime.now();
-
 }
