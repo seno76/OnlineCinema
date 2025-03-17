@@ -26,7 +26,7 @@ public class UserPreferencesSeriesRepositoryTest {
     public void testSaveUserPreferencesSeries() {
         // Создаем объект User
         User user = new User();
-        user.setUsername("testuser");
+        user.setUsername("testuser1");
         entityManager.persist(user);
 
         // Создаем объект UserPreferences
