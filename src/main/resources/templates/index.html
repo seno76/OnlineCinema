@@ -81,62 +81,77 @@
 <nav>
     <a href="movies">ФИЛЬМЫ</a>
     <a href="series">СЕРИАЛЫ</a>
-    <a href="cartoon">МУЛЬТФИЛЬМЫ</a>
+    <a href="movies/cartoons">МУЛЬТФИЛЬМЫ</a>
+<!--    <a href="admin">Admin</a>-->
 </nav>
 <div class="search-bar">
-    <input type="text" placeholder="Введите название">
-    <button>Поиск</button>
+    <form th:action="@{/search}" method="get">
+        <input type="text" name="query" placeholder="Введите название">
+        <button type="submit">Поиск</button>
+    </form>
 </div>
 <section class="premieres">
+    <h2>ПРЕМЬЕРЫ</h2>
+    <div class="movie-list">
     <div th:each="movie : ${movies}">
-        <div class="card">
+        <div class="movie-item">
             <h3 th:text="${movie.title}"></h3>
             <p th:text="${movie.rating}"></p>
-            <p><strong>Price:</strong> <span th:text="${product.price}"></span></p>
-            <a th:href="@{/movie/{id}(id=${movie.movieId})}">Подробнее</a>
+            <a th:href="@{/movies/{id}(id=${movie.movieId})}">Подробнее</a>
         </div>
     </div>
-    <h2>Премьеры</h2>
-    <div class="movie-list">
-        <div class="movie-item">
-            <h3>Ущелье</h3>
-            <p>КП 7.387</p>
-            <p>IMOB 8</p>
-        </div>
-        <div class="movie-item">
-            <h3>Капитан Америка: Новый мир</h3>
-            <p>КП 7.9</p>
-            <p>IMOB 8.1</p>
-        </div>
     </div>
+
 </section>
 <section class="movies">
     <h2>ФИЛЬМЫ</h2>
     <div class="movie-list">
-        <div class="movie-item">
-            <h3>Веном 2</h3>
-            <p>КП 6.1</p>
-            <p>IMOB 6.1</p>
-        </div>
-        <div class="movie-item">
-            <h3>Дюна</h3>
-            <p>КП 8.0</p>
-            <p>IMOB 8.4</p>
+        <div th:each="movie : ${movies}">
+            <div class="movie-item">
+                <h3 th:text="${movie.title}"></h3>
+                <p th:text="${movie.rating}"></p>
+                <a th:href="@{/movies/{id}(id=${movie.movieId})}">Подробнее</a>
+            </div>
         </div>
     </div>
 </section>
-<h3>Создать новый фильм</h3>
-<form action="/create" method="post">
-    Название фильма: <input type="text" name="title"/><br><br>
-    Описание: <input type="text" name="description"/><br><br>
-    Жанр: <input type="text" name="genre"/><br><br>
-    Год: <input type="text" name="year"/><br><br>
-    Рейтинг: <input type="text" name="rating"/><br><br>
-    URL Картинки: <input type="text" name="posterUrl"/><br><br>
-    URL Фильма: <input type="text" name="movieUrl"/><br><br>
-    Продолжительность: <input type="text" name="duration"/><br><br>
-    Фильм/Мультфильм: <input type="text" name="isCartoon"/><br><br>
-    <input type="submit" value="Добавить фильм">
-</form>
+</section>
+<section class="movies">
+    <h2>МУЛЬТФИЛЬМЫ</h2>
+    <div class="movie-list">
+        <div th:each="cartoon : ${cartoons}">
+            <div class="movie-item">
+                <h3 th:text="${cartoon.title}"></h3>
+                <p th:text="${cartoon.rating}"></p>
+                <a th:href="@{movies/cartoons/{id}(id=${cartoon.movieId})}">Подробнее</a>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="movies">
+    <h2>СЕРИАЛЫ</h2>
+    <div class="movie-list">
+        <div th:each="el : ${series}">
+            <div class="movie-item">
+                <h3 th:text="${el.title}"></h3>
+                <p th:text="${el.rating}"></p>
+                <a th:href="@{/series/{id}(id=${el.seriesId})}">Подробнее</a>
+            </div>
+        </div>
+    </div>
+</section>
+<!--<h3>Создать новый фильм</h3>-->
+<!--<form action="/create" method="post">-->
+<!--    Название фильма: <input type="text" name="title"/><br><br>-->
+<!--    Описание: <input type="text" name="description"/><br><br>-->
+<!--    Жанр: <input type="text" name="genre"/><br><br>-->
+<!--    Год: <input type="text" name="year"/><br><br>-->
+<!--    Рейтинг: <input type="text" name="rating"/><br><br>-->
+<!--    URL Картинки: <input type="text" name="posterUrl"/><br><br>-->
+<!--    URL Фильма: <input type="text" name="movieUrl"/><br><br>-->
+<!--    Продолжительность: <input type="text" name="duration"/><br><br>-->
+<!--    Фильм/Мультфильм: <input type="text" name="isCartoon"/><br><br>-->
+<!--    <input type="submit" value="Добавить фильм">-->
+<!--</form>-->
 </body>
 </html>

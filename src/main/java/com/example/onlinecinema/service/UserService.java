@@ -1,11 +1,14 @@
 package com.example.onlinecinema.service;
 
+import com.example.onlinecinema.model.Movie;
 import com.example.onlinecinema.model.User;
 import com.example.onlinecinema.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,6 +33,10 @@ public class UserService {
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }
 

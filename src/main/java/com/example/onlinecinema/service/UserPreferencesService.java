@@ -20,6 +20,7 @@ public class UserPreferencesService {
         return userPreferencesRepository.save(userPreferences);
     }
 
+
     public void removeFromLibrary(Long id) {
         userPreferencesRepository.deleteById(id);
     }

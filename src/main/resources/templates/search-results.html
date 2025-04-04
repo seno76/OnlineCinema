@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Онлайн Кинотеатр</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+    header {
+        background-color: #333;
+        color: #fff;
+        padding: 10px 20px;
+        text-align: center;
+    }
+    nav {
+        display: flex;
+        justify-content: space-around;
+        background-color: #444;
+        padding: 10px;
+    }
+    nav a {
+        color: #fff;
+        text-decoration: none;
+    }
+    .search-bar {
+        text-align: center;
+        margin: 20px;
+    }
+    .search-bar input {
+        padding: 10px;
+        width: 300px;
+    }
+    .premieres, .movies {
+        margin: 20px;
+    }
+    .premieres h2, .movies h2 {
+        color: #333;
+    }
+    .movie-list {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .movie-item {
+        background-color: #fff;
+        margin: 10px;
+        padding: 10px;
+        width: 200px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .card {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 16px;
+        width: 200px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+    }
+    .card img {
+        max-width: 100%;
+        border-radius: 8px;
+    }
+    .card h3 {
+        margin: 8px 0;
+    }
+    .card p {
+        margin: 4px 0;
+        color: #555;
+    }
+    .no-results {
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 30px;
+    margin: 30px auto;
+    max-width: 500px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+  </style>
+</head>
+<header>
+  <h1>ONLINE CINEMA</h1>
+</header>
+<nav>
+  <a href="movies">ФИЛЬМЫ</a>
+  <a href="series">СЕРИАЛЫ</a>
+  <a href="cartoons">МУЛЬТФИЛЬМЫ</a>
+  <!--    <a href="admin">Admin</a>-->
+</nav>
+<div class="search-bar">
+  <form th:action="@{/search}" method="get">
+    <input type="text" name="query" placeholder="Введите название">
+    <button type="submit">Поиск</button>
+  </form>
+</div>
+<section th:if="${not #lists.isEmpty(movies)}" class="movies">
+  <h2>ФИЛЬМЫ</h2>
+  <div class="movie-list">
+    <div th:each="movie : ${movies}">
+      <div class="movie-item">
+        <h3 th:text="${movie.title}"></h3>
+        <p th:text="${movie.rating}"></p>
+        <a th:href="@{/movies/{id}(id=${movie.movieId})}">Подробнее</a>
+      </div>
+    </div>
+  </div>
+</section>
+<section th:if="${not #lists.isEmpty(series)}" class="movies">
+  <h2>СЕРИАЛЫ</h2>
+  <div class="movie-list">
+    <div th:each="el : ${series}">
+      <div class="movie-item">
+        <h3 th:text="${el.title}"></h3>
+        <p th:text="${el.rating}"></p>
+        <a th:href="@{/series/{id}(id=${el.seriesId})}">Подробнее</a>
+      </div>
+    </div>
+</section>
+<div th:if="${#lists.isEmpty(movies) and #lists.isEmpty(series)}"
+     class="no-results">
+  <p>😕 По вашему запросу ничего не найдено. Попробуйте изменить критерии поиска.</p>
+</div>
+</body>
+</html>

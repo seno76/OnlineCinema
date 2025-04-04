@@ -3,6 +3,7 @@ package com.example.onlinecinema.controller;
 import com.example.onlinecinema.model.Movie;
 import com.example.onlinecinema.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +35,17 @@ public class MovieController {
     public void deleteMovie(@PathVariable Long id) {
         movieService.deleteMovie(id);
     }
+
+    @GetMapping("/cartoons/{id}")
+    public Movie getInfoForCartoon(@PathVariable Long id){
+        return movieService.getMovieById(id);
+    }
+
+    @GetMapping("/cartoons")
+    public List<Movie> viewCartoons(Model model) {
+        return movieService.getAllCartoons();
+    }
+
 
     @GetMapping("/search")
     public List<Movie> searchMovies(@RequestParam String title) {
