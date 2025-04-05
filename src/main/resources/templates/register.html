@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрация | Онлайн Кинотеатр</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+    header {
+        background-color: #333;
+        color: #fff;
+        padding: 10px 20px;
+        text-align: center;
+    }
+    nav {
+        display: flex;
+        justify-content: space-around;
+        background-color: #444;
+        padding: 10px;
+    }
+    nav a {
+        color: #fff;
+        text-decoration: none;
+    }
+    .auth-container {
+        max-width: 400px;
+        margin: 30px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .auth-title {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    .auth-form input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .auth-form button {
+        width: 100%;
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .auth-form button:hover {
+        background-color: #45a049;
+    }
+    .auth-links {
+        text-align: center;
+        margin-top: 15px;
+    }
+    .auth-links a {
+        color: #4CAF50;
+        text-decoration: none;
+    }
+    .error-message {
+        color: #f44336;
+        text-align: center;
+        margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>ONLINE CINEMA</h1>
+</header>
+<nav>
+  <a th:href="@{'/?section=movies&page=1'}">ФИЛЬМЫ</a>
+  <a th:href="@{'/?section=series&page=1'}">СЕРИАЛЫ</a>
+  <a th:href="@{'/?section=cartoons&page=1'}">МУЛЬТФИЛЬМЫ</a>
+</nav>
+
+<div class="auth-container">
+  <h2 class="auth-title">Регистрация</h2>
+
+  <div th:if="${error}" class="error-message" th:text="${error}"></div>
+
+  <form class="auth-form" th:action="@{/register}" method="post">
+    <input type="text" name="username" placeholder="Логин" required>
+    <input type="password" name="password" placeholder="Пароль" required>
+    <button type="submit">Зарегистрироваться</button>
+  </form>
+
+  <div class="auth-links">
+    Уже есть аккаунт? <a th:href="@{/login}">Войти</a>
+  </div>
+</div>
+
+</body>
+</html>
