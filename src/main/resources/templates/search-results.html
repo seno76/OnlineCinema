@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Онлайн Кинотеатр</title>
+  <title>Результаты поиска | Онлайн Кинотеатр</title>
   <style>
     body {
         font-family: Arial, sans-serif;
@@ -27,6 +27,11 @@
         color: #fff;
         text-decoration: none;
     }
+    nav a.active {
+        background-color: #4CAF50;
+        padding: 10px;
+        border-radius: 4px;
+    }
     .search-bar {
         text-align: center;
         margin: 20px;
@@ -35,95 +40,168 @@
         padding: 10px;
         width: 300px;
     }
-    .premieres, .movies {
+    .search-results {
         margin: 20px;
     }
-    .premieres h2, .movies h2 {
+    .section-title {
         color: #333;
+        margin-bottom: 15px;
     }
     .movie-list {
         display: flex;
         flex-wrap: wrap;
+        gap: 15px;
     }
     .movie-item {
         background-color: #fff;
-        margin: 10px;
-        padding: 10px;
+        padding: 15px;
         width: 200px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .card {
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        padding: 16px;
-        margin: 16px;
-        width: 200px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        display: inline-block;
-    }
-    .card img {
-        max-width: 100%;
         border-radius: 8px;
     }
-    .card h3 {
-        margin: 8px 0;
+    .movie-item h3 {
+        margin: 0 0 10px 0;
+        font-size: 18px;
     }
-    .card p {
-        margin: 4px 0;
+    .movie-item p {
+        margin: 5px 0;
         color: #555;
     }
+    .movie-item a {
+        display: inline-block;
+        margin-top: 10px;
+        color: #4CAF50;
+        text-decoration: none;
+    }
     .no-results {
-    text-align: center;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    padding: 30px;
-    margin: 30px auto;
-    max-width: 500px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+        text-align: center;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 30px;
+        margin: 30px auto;
+        max-width: 500px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin: 30px 0;
+        padding: 20px 0;
+    }
+    .pagination a, .pagination span {
+        color: #333;
+        padding: 8px 16px;
+        text-decoration: none;
+        border: 1px solid #ddd;
+        margin: 0 4px;
+        border-radius: 4px;
+    }
+    .pagination a:hover {
+        background-color: #ddd;
+    }
+    .pagination .current {
+        background-color: #4CAF50;
+        color: white;
+        border: 1px solid #4CAF50;
+    }
+    .search-query {
+        text-align: center;
+        margin: 20px 0;
+        font-size: 18px;
+        color: #333;
+    }
   </style>
 </head>
+<body>
 <header>
   <h1>ONLINE CINEMA</h1>
 </header>
 <nav>
-  <a href="movies">ФИЛЬМЫ</a>
-  <a href="series">СЕРИАЛЫ</a>
-  <a href="cartoons">МУЛЬТФИЛЬМЫ</a>
-  <!--    <a href="admin">Admin</a>-->
+  <a th:href="@{/}" th:classappend="${currentSection == 'movies'} ? 'active' : ''">ФИЛЬМЫ</a>
+  <a th:href="@{/(section='series',page=1)}" th:classappend="${currentSection == 'series'} ? 'active' : ''">СЕРИАЛЫ</a>
+  <a th:href="@{/(section='cartoons',page=1)}" th:classappend="${currentSection == 'cartoons'} ? 'active' : ''">МУЛЬТФИЛЬМЫ</a>
 </nav>
 <div class="search-bar">
   <form th:action="@{/search}" method="get">
-    <input type="text" name="query" placeholder="Введите название">
+    <input type="text" name="query" th:value="${query}" placeholder="Введите название">
     <button type="submit">Поиск</button>
   </form>
 </div>
-<section th:if="${not #lists.isEmpty(movies)}" class="movies">
-  <h2>ФИЛЬМЫ</h2>
-  <div class="movie-list">
-    <div th:each="movie : ${movies}">
-      <div class="movie-item">
-        <h3 th:text="${movie.title}"></h3>
-        <p th:text="${movie.rating}"></p>
-        <a th:href="@{/movies/{id}(id=${movie.movieId})}">Подробнее</a>
+
+<div class="search-query" th:if="${query}">
+  Результаты поиска по запросу: "<span th:text="${query}"></span>"
+</div>
+
+<div class="search-results">
+  <!-- Фильмы -->
+  <section th:if="${not #lists.isEmpty(movies)}">
+    <h2 class="section-title">ФИЛЬМЫ</h2>
+    <div class="movie-list">
+      <div th:each="movie : ${movies}">
+
+        <div class="movie-item">
+          <h3 th:text="${movie.title}"></h3>
+          <p>Рейтинг: <span th:text="${movie.rating}"></span></p>
+          <p>Год: <span th:text="${movie.year}"></span></p>
+          <a th:href="@{/movies/{id}(id=${movie.movieId})}">Подробнее</a>
+        </div>
       </div>
     </div>
+  </section>
+
+  <!-- Сериалы -->
+  <section th:if="${not #lists.isEmpty(series)}">
+    <h2 class="section-title">СЕРИАЛЫ</h2>
+    <div class="movie-list">
+      <div th:each="series : ${series}">
+        <div class="movie-item">
+          <h3 th:text="${series.title}"></h3>
+          <p>Рейтинг: <span th:text="${series.rating}"></span></p>
+          <a th:href="@{/series/{id}(id=${series.seriesId})}">Подробнее</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Мультфильмы -->
+  <section th:if="${not #lists.isEmpty(cartoons)}">
+    <h2 class="section-title">МУЛЬТФИЛЬМЫ</h2>
+    <div class="movie-list">
+      <div th:each="cartoon : ${cartoons}">
+        <div class="movie-item">
+          <h3 th:text="${cartoon.title}"></h3>
+          <p>Рейтинг: <span th:text="${cartoon.rating}"></span></p>
+          <p>Год: <span th:text="${cartoon.year}"></span></p>
+          <a th:href="@{/movies/cartoons/{id}(id=${cartoon.movieId})}">Подробнее</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Пагинация -->
+  <div class="pagination" th:if="${totalPages > 1}">
+    <span th:if="${currentPage > 1}">
+      <a th:href="@{/search(query=${query}, page=${currentPage - 1})}">&laquo; Назад</a>
+    </span>
+
+    <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+      <a th:if="${i != currentPage}"
+         th:href="@{/search(query=${query}, page=${i})}"
+         th:text="${i}"></a>
+      <span th:unless="${i != currentPage}" th:text="${i}" class="current"></span>
+    </span>
+
+    <span th:if="${currentPage < totalPages}">
+      <a th:href="@{/search(query=${query}, page=${currentPage + 1})}">Вперед &raquo;</a>
+    </span>
   </div>
-</section>
-<section th:if="${not #lists.isEmpty(series)}" class="movies">
-  <h2>СЕРИАЛЫ</h2>
-  <div class="movie-list">
-    <div th:each="el : ${series}">
-      <div class="movie-item">
-        <h3 th:text="${el.title}"></h3>
-        <p th:text="${el.rating}"></p>
-        <a th:href="@{/series/{id}(id=${el.seriesId})}">Подробнее</a>
-      </div>
-    </div>
-</section>
-<div th:if="${#lists.isEmpty(movies) and #lists.isEmpty(series)}"
-     class="no-results">
-  <p>😕 По вашему запросу ничего не найдено. Попробуйте изменить критерии поиска.</p>
+
+  <!-- Нет результатов -->
+  <div th:if="${#lists.isEmpty(movies) and #lists.isEmpty(series) and #lists.isEmpty(cartoons)}"
+       class="no-results">
+    <p>😕 По вашему запросу "<span th:text="${query}"></span>" ничего не найдено.</p>
+    <p>Попробуйте изменить критерии поиска.</p>
+  </div>
 </div>
 </body>
 </html>
