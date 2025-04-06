@@ -150,4 +150,5 @@ public class HomeController {
     public String viewAdmin(Model model) {
         return "admin";
     }
+
 }
