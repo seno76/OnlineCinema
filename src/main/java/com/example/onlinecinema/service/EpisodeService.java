@@ -1,85 +1,54 @@
-//package com.example.onlinecinema.service;
-//
-//import com.example.onlinecinema.model.Episode;
-//import com.example.onlinecinema.repository.EpisodeRepository;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.stereotype.Service;
-//import org.springframework.transaction.annotation.Transactional;
-//
-//import java.util.List;
-//
-//@Service
-//@RequiredArgsConstructor
-//public class EpisodeService {
-//
-//    private final EpisodeRepository episodeRepository;
-//    private final SeasonService seasonService;
-//
-//    @Transactional
-//    public Episode saveEpisode(Episode episode) {
-//        if (episode.getSeasonId() == null || episode.getSeasonId().getSeasonId() == null) {
-//            throw new IllegalArgumentException("Season must be specified");
-//        }
-//
-//        if (!seasonService.existsById(episode.getSeasonId().getSeasonId())) {
-//            throw new IllegalArgumentException("Season not found with id: " +
-//                    episode.getSeasonId().getSeasonId());
-//        }
-//
-//        return episodeRepository.save(episode);
-//    }
-//
-//    @Transactional(readOnly = true)
-//    public List<Episode> getEpisodesBySeason(Long seasonId) {
-//        if (!seasonService.existsById(seasonId)) {
-//            throw new IllegalArgumentException("Season not found with id: " + seasonId);
-//        }
-//        return episodeRepository.findBySeasonIdSeasonId(seasonId); // Особое именование
-//    }
-//
-//    @Transactional(readOnly = true)
-//    public List<Episode> getAllEpisodes() {
-//        return episodeRepository.findAll();
-//    }
-//
-//
-//    @Transactional(readOnly = true)
-//    public Episode getEpisodeById(Long id) {
-//        return episodeRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Episode not found with id: " + id));
-//    }
-//
-//    @Transactional
-//    public void deleteEpisode(Long id) {
-//        if (!episodeRepository.existsById(id)) {
-//            throw new RuntimeException("Episode not found with id: " + id);
-//        }
-//        episodeRepository.deleteById(id);
-//    }
-//
-//    @Transactional
-//    public Episode updateEpisode(Long id, Episode episodeDetails) {
-//        Episode episode = getEpisodeById(id);
-//
-//        episode.setTitle(episodeDetails.getTitle());
-//        episode.setDescription(episodeDetails.getDescription());
-//        episode.setDuration(episodeDetails.getDuration());
-//        episode.setVideoUrl(episodeDetails.getVideoUrl());
-//
-//        // Обновляем сезон только если он указан и существует
-//        if (episodeDetails.getSeasonId() != null && episodeDetails.getSeasonId().getSeasonId() != null) {
-//            if (!seasonService.existsById(episodeDetails.getSeason().getId())) {
-//                throw new IllegalArgumentException("Season not found with id: " +
-//                        episodeDetails.getSeason().getId());
-//            }
-//            episode.setSeason(episodeDetails.getSeasonId());
-//        }
-//
-//        return episodeRepository.save(episode);
-//    }
-//
-//    @Transactional(readOnly = true)
-//    public boolean existsById(Long id) {
-//        return episodeRepository.existsById(id);
-//    }
-//}
+package com.example.onlinecinema.service;
+
+import com.example.onlinecinema.model.Episode;
+import com.example.onlinecinema.repository.EpisodeRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class EpisodeService {
+    private final EpisodeRepository episodeRepository;
+
+    public List<Episode> getAllEpisodes() {
+        return episodeRepository.findAll();
+    }
+
+    public List<Episode> getAllEpisodesByIdSeason(Long seasonId) {
+        return episodeRepository.findBySeasonId_SeasonId(seasonId);
+    }
+
+    @Transactional
+    public void deleteAllEpisodesInSeason(Long seasonId) {
+        episodeRepository.deleteBySeasonId_SeasonId(seasonId);
+    }
+
+    public long countEpisodesForSeason(Long seasonId) {
+        return episodeRepository.countBySeasonId_SeasonId(seasonId);
+    }
+
+    public int countDurationForEpisodesInSeason(Long seasonId) {
+        Integer totalMinutes = episodeRepository.sumDurationBySeasonId(seasonId);
+        return totalMinutes != null ? totalMinutes : 0;
+    }
+
+    private String formatMinutesToHours(int totalMinutes) {
+        int hours = totalMinutes / 60;
+        int minutes = totalMinutes % 60;
+        return hours > 0 ? String.format("%d ч %d мин", hours, minutes) : String.format("%d мин", minutes);
+    }
+
+    public String getFormattedDurationForEpisode(Long episodeId) {
+        Episode episode = episodeRepository.findById(episodeId)
+                .orElseThrow(() -> new EntityNotFoundException("Эпизод не найден"));
+        return formatMinutesToHours(episode.getDuration());
+    }
+
+    public String getFormattedDurationForSeason(Long seasonId) {
+        return formatMinutesToHours(countDurationForEpisodesInSeason(seasonId));
+    }
+}
