@@ -91,9 +91,9 @@
 
   <div th:if="${error}" class="error-message" th:text="${error}"></div>
 
-  <form class="auth-form" th:action="@{/register}" method="post">
-    <input type="text" name="username" placeholder="Логин" required>
-    <input type="password" name="password" placeholder="Пароль" required>
+  <form class="auth-form" th:action="@{/register}" th:object="${user}" method="post">
+    <input type="text" th:field="*{username}" placeholder="Логин" required>
+    <input type="password" th:field="*{password}" placeholder="Пароль" required>
     <button type="submit">Зарегистрироваться</button>
   </form>
 

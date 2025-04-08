@@ -16,16 +16,22 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**", "/home", "/register", "/login", "/static/**").permitAll()  // Доступ всем
-                        .anyRequest().authenticated()  // Остальное — только для авторизованных
+                        .requestMatchers("/", "/home", "/register", "/login", "/static/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")  // Страница входа
-                        .defaultSuccessUrl("/", true)  // После входа — на профиль
+                        .loginProcessingUrl("/login")  // URL для обработки формы входа
+                        .defaultSuccessUrl("/profile", true)  // Перенаправление после успешного входа
+                        .failureUrl("/login?error=true")  // Перенаправление при ошибке
+                        .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/")  // После выхода — на главную
+                        .logoutUrl("/logout")  // URL для выхода
+                        .logoutSuccessUrl("/")  // Перенаправление после выхода
+                        .permitAll()
                 );
+
         return http.build();
     }
 
