@@ -16,7 +16,7 @@ public class Episode {
     private Long episodeId;
     @ManyToOne // Много эпизодов могут относиться к одному сезону
     @JoinColumn(name = "seasonId", nullable = false) // Ссылаемся на сезон
-    private Season seasonId;
+    private Season season;
     @Column(name = "title")
     private String title;
     @Column(name = "description", columnDefinition = "text")

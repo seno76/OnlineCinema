@@ -7,6 +7,7 @@ import com.example.onlinecinema.model.UserPreferencesSeries;
 import com.example.onlinecinema.repository.UserPreferencesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.OptionalDouble;
@@ -20,74 +21,75 @@ public class UserPreferencesService {
 
     // Получение библиотеки пользователя по его id
     public List<UserPreferences> getUserLibrary(Long userId) {
-        return userPreferencesRepository.findByUserId(userId);
+        return userPreferencesRepository.findByUserUserId(userId);
     }
 
     // Добавление фильма/сериала в библиотеку
+    @Transactional
     public UserPreferences addToLibrary(UserPreferences userPreferences) {
         return userPreferencesRepository.save(userPreferences);
     }
 
     // Удаление фильма из библиотеки
+    @Transactional
     public void removeFromLibrary(Long id) {
         userPreferencesRepository.deleteById(id);
     }
 
+    // Средний бал всех сериалов добавленных в библиотеку
+    public Double getAverageSeriesRating(Long userId) {
+        return userPreferencesRepository.getAverageSeriesRatingByUserId(userId);
+    }
+
+    // Средний балл всех фильмов в библиотеке
+    public Double getAverageMovieRating(Long userId) {
+        return userPreferencesRepository.getAverageMovieRatingByUserId(userId);
+    }
+
     // Средняя оценка библиотеки пользователя
     public Double getAverageRating(Long userId) {
-        UserPreferences preferences = userPreferencesRepository.findByUserId(userId).stream()
-                .findFirst()
-                .orElse(null);
+        Double movieAvg = getAverageMovieRating(userId);
+        Double seriesAvg = getAverageSeriesRating(userId);
 
-        if (preferences == null) return null;
-
-        List<Double> ratings = preferences.getMovies().stream()
-                .map(UserPreferencesMovie::getMovie)
-                .filter(movie -> movie.getRating() > 0)
-                .map(Movie::getRating)
-                .collect(Collectors.toList());
-
-        OptionalDouble average = ratings.stream()
-                .mapToDouble(Double::doubleValue)
-                .average();
-
-        return average.isPresent() ? average.getAsDouble() : null;
+        if (movieAvg != null && seriesAvg != null) {
+            return (movieAvg + seriesAvg) / 2;
+        } else if (movieAvg != null) {
+            return movieAvg;
+        } else if (seriesAvg != null) {
+            return seriesAvg;
+        } else {
+            return null; // или 0.0 — в зависимости от логики
+        }
     }
 
     // Средння продолжительность фильмов в библиотеке
-    public Integer getAverageDuration(Long userId) {
-        UserPreferences preferences = userPreferencesRepository.findByUserId(userId).stream()
-                .findFirst()
-                .orElse(null);
-
-        if (preferences == null) return null;
-
-        List<Integer> durations = preferences.getMovies().stream()
-                .map(UserPreferencesMovie::getMovie)
-                .map(Movie::getDuration)
-                .collect(Collectors.toList());
-
-        OptionalDouble average = durations.stream()
-                .mapToInt(Integer::intValue)
-                .average();
-
-        return average.isPresent() ? (int) average.getAsDouble() : null;
+    public double getAverageMovieDuration(Long userId) {
+        return userPreferencesRepository.getAverageMovieDuration(userId);
     }
 
-    // Какой жанр чаще всего смотрит пользователь
-    public String getMostWatchedGenre(Long userId) {
-        UserPreferences preferences = userPreferencesRepository.findByUserId(userId).stream()
-                .findFirst()
-                .orElse(null);
-
-        if (preferences == null) return null;
-
-        return preferences.getMovies().stream()
-                .map(UserPreferencesMovie::getMovie)
-                .collect(Collectors.groupingBy(Movie::getGenre, Collectors.counting()))
-                .entrySet().stream()
-                .max((e1, e2) -> e1.getValue().compareTo(e2.getValue()))
-                .map(entry -> entry.getKey())
-                .orElse(null);
+    // Средння продолжительность сериалов в библиотеке
+    public double getAverageSeriesDuration(Long userId) {
+        return userPreferencesRepository.getAverageSeriesDuration(userId);
     }
+
+    // Количество фильмов в библиотеке пользователя
+    public Long countMoviesInLib(Long userId) {
+        return userPreferencesRepository.countMoviesInLibrary(userId);
+    }
+
+    // Количество сериалов в библиотеке пользователя
+    public Long countSeriesInLib(Long userId) {
+        return userPreferencesRepository.countSeriesInLibrary(userId);
+    }
+
+    // Любимый жанр фильмов в библиотеке
+    public String mostPopularGenreMove(Long userId){
+        return userPreferencesRepository.findMostWatchedGenre(userId);
+    }
+
+    // Любимый жанр сериалов в библиотеке
+    public String mostPopularGenreSeries(Long userId){
+        return userPreferencesRepository.findMostWatchedSeriesGenre(userId);
+    }
+
 }

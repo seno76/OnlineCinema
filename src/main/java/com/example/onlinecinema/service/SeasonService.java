@@ -2,11 +2,11 @@ package com.example.onlinecinema.service;
 
 import com.example.onlinecinema.model.Episode;
 import com.example.onlinecinema.model.Season;
-import com.example.onlinecinema.repository.EpisodeRepository;
 import com.example.onlinecinema.repository.SeasonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.spec.ECPoint;
 import java.util.List;
@@ -18,10 +18,8 @@ public class SeasonService {
     @Autowired
     private final SeasonRepository seasonRepository;
 
-    @Autowired
-    private EpisodeService episodeService;
-
     // Сохранение сезона
+    @Transactional
     public Season saveSeason(Season season) {
         return seasonRepository.save(season);
     }
@@ -31,9 +29,14 @@ public class SeasonService {
         return seasonRepository.findAll();
     }
 
-    // Вывод всех сезонов по сериалу
-    public List<Season> getSeasonsBySeries(Long seriesId) {
-        return seasonRepository.findBySeriesId_SeriesId(seriesId);
+    // Вывод всех эпизодов для данного сезона
+    public List<Episode> getAllEpisodesForSeason(Long seasonId) {
+        return seasonRepository.getAllEpisodesForSeason(seasonId);
+    }
+
+    // Количество всех эпизодов данного сезона
+    public int getCountEpisodesInSeason(Long seasonId) {
+        return seasonRepository.getCountEpisodesForSeason(seasonId);
     }
 
     // Вывод сезона по id
@@ -42,6 +45,7 @@ public class SeasonService {
     }
 
     // Удаление сезона
+    @Transactional
     public void deleteSeason(Long id) {
         seasonRepository.deleteById(id);
     }
@@ -53,12 +57,14 @@ public class SeasonService {
 
     // Общая продолжительность по сезону
     public int AllTimeForSeason(Long seasonId) {
-        int TotalTime = 0;
-        List<Episode> episodes = episodeService.getAllEpisodesByIdSeason(seasonId);
-        for (Episode itEpisode: episodes) {
-            TotalTime += itEpisode.getDuration();
-        }
-        return TotalTime;
+        return seasonRepository.getTotalTimeForSeason(seasonId);
     }
+
+    // Перевод минут в форматированный формат
+    public String toFormatDuration(int duration) {
+        return FormatDurations.getFormattedDuration(duration);
+    }
+
+    // Рейтинг сезона (если будет добавлено в бд)
 
 }

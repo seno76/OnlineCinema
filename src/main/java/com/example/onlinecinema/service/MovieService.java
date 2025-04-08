@@ -11,6 +11,8 @@ import com.example.onlinecinema.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import com.example.onlinecinema.service.FormatDurations;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,15 +25,9 @@ public class MovieService {
     private MovieRepository movieRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private UserPreferencesMovieRepository userPreferencesMovieRepository;
 
-    @Autowired
-    private UserPreferencesSeriesRepository userPreferencesSeriesRepository;
-
-    // Получение вообще всех фильмов + мультков
+    // Получение вообще всех фильмов + мультиков
     public List<Movie> getAllMovies() {
         return movieRepository.findAll();
     }
@@ -41,105 +37,26 @@ public class MovieService {
         return movieRepository.findById(id).orElse(null);
     }
 
+    // Получение количества всех фильмов
+    public int getCountAllFilms(){
+        return movieRepository.getCountAllMovies();
+    }
+
+    // Получение продолжительности фильма
+    public int getMovieDuration(Long movieId) {
+        return movieRepository.getDurationById(movieId);
+    }
+
     // Сохранение фмльма
+    @Transactional
     public void saveMovie(Movie movie) {
         movieRepository.save(movie);
     }
 
     // Удаление фильма
+    @Transactional
     public void deleteMovie(Long id) {
         movieRepository.deleteById(id);
-    }
-
-    // Получение 10 наиболее новых мультфильмов
-    public List<Movie> getTopCartoon() {
-        final int count = 10;
-        return movieRepository.findByIsCartoonTrueOrderByCreatedAtDesc()
-                .stream()
-                .limit(count)
-                .collect(Collectors.toList());
-    }
-
-    // Получение премьер (количество 10) (без учета мультфильмов)
-    public List<Movie> getTopPremieres() {
-        int count = 10;
-        return movieRepository.findByOrderByCreatedAtDesc()
-                .stream()
-                .limit(count)
-                .collect(Collectors.toList());
-    }
-
-    // Количество пользователей, добавивших сериал в избранное
-    public int countUsersWithFavoriteSeries(Long seriesId) {
-        return userPreferencesSeriesRepository.countBySeriesSeriesId(seriesId);
-    }
-
-    // Список пользователей, добавивших сериал в избранное
-    public List<User> getUsersWithFavoriteSeries(Long seriesId) {
-        return userPreferencesSeriesRepository.findBySeriesSeriesId(seriesId)
-                .stream()
-                .map(ups -> ups.getUserPreferences().getUser())
-                .collect(Collectors.toList());
-    }
-    // Получение фильмов по жанру
-    public List<Movie> getMoviesByGenre(String genre) {
-        return movieRepository.findByGenreContainingIgnoreCase(genre);
-    }
-
-    // Получение фильмов по продолжительности
-    public List<Movie> getMoviesByDuration(int minMinutes, int maxMinutes) {
-        List<Movie> res = new ArrayList<>();;
-        List<Movie> movies = getAllMovies();
-        for (Movie movie: movies) {
-            if (movie.getDuration() >= minMinutes && movie.getDuration() <= maxMinutes) {
-                res.add(movie);
-            }
-        }
-        return res;
-    }
-
-    // Получение фильмов по году
-    public List<Movie> getMoviesByYear(int year) {
-        return movieRepository.findByYear(year);
-    }
-
-    // Сколько пользователей добавило данный фильм в библиотеку
-    public int getUsersCountAddedToLibrary(Long movieId) {
-        Movie movie = movieRepository.findById(movieId).orElse(null);
-        if (movie == null) return 0;
-        return userPreferencesMovieRepository.countByMovie(movie);
-    }
-
-    // Получение по фильму списка всех пользователей добавивших в библиотек предпостений
-    public List<User> getUsersWhoAddedToLibrary(Long movieId) {
-        // 1. Находим фильм по ID
-        Movie movie = movieRepository.findById(movieId).orElse(null);
-
-        // 2. Если фильм не найден, возвращаем пустой список
-        if (movie == null) {
-            return new ArrayList<>();
-        }
-
-        // 3. Получаем все записи UserPreferencesMovie для этого фильма
-        List<UserPreferencesMovie> preferences = userPreferencesMovieRepository.findByMovie(movie);
-
-        // 4. Создаем список для результата
-        List<User> users = new ArrayList<>();
-
-        // 5. Для каждой записи UserPreferencesMovie получаем пользователя
-        for (UserPreferencesMovie upm : preferences) {
-            // Получаем UserPreferences из записи
-            UserPreferences userPreferences = upm.getUserPreferences();
-
-            // Получаем User из UserPreferences
-            User user = userPreferences.getUser();
-
-            // Добавляем пользователя в результат
-            users.add(user);
-        }
-
-        // 6. Возвращаем список пользователей
-        return users;
     }
 
     // Получение всех мультиков
@@ -149,6 +66,56 @@ public class MovieService {
 
     // Поиск фильма по названию
     public List<Movie> searchMoviesByTitle(String title) {
-        return movieRepository.findByTitleContaining(title);
+        return movieRepository.searchMoviesByTitle(title);
     }
+
+    // Получение премьер мультиков (количество устанавливается при необходимости)
+    public List<Movie> getTopCartoons(int limit) {
+        PageRequest pageRequest = PageRequest.of(0, limit);
+        return movieRepository.findPremiersCartoons(pageRequest);
+    }
+
+    // Получение премьер фильмов (без учета мультфильмов)
+    public List<Movie> getTopMovies(int limit) {
+        PageRequest pageRequest = PageRequest.of(0, limit);
+        return movieRepository.findPremieresMovies(pageRequest);
+    }
+
+    // Получение фильмов по жанру
+    public List<Movie> getMoviesByGenre(String genre) {
+        return movieRepository.findByGenreContainingIgnoreCase(genre);
+    }
+
+    // Получение фильмов по продолжительности в диапозоне
+    public List<Movie> getMoviesByDuration(int minMinutes, int maxMinutes) {
+        return movieRepository.findByDurationBetween(minMinutes, maxMinutes);
+    }
+
+    // Получение фильмов по году
+    public List<Movie> getMoviesByYear(int year) {
+        return movieRepository.findByYear(year);
+    }
+
+    // Сколько пользователей добавило данный фильм в библиотеку
+    public int getUsersCountAddedToLibrary(Long movieId) {
+        return userPreferencesMovieRepository.getUsersCountAddedToLibrary(movieId);
+    }
+
+    // Получение по фильму списка всех пользователей добавивших в библиотек предпочтений
+    public List<User> getUsersWhoAddedToLibrary(Long movieId) {
+        return movieRepository.getUsersWhoAddedToLibrary(movieId);
+    }
+
+    // Перевод продолжительности фильма из минут в форматированный формат
+    public String toFormatDuration(int duration) {
+        return FormatDurations.getFormattedDuration(duration);
+    }
+
+    // Получение наиболее популярных фильмов и мультиков (по рейтингу)
+    public List<Movie> getPopularMovies(int limit) {
+        PageRequest pageRequest = PageRequest.of(0, limit);
+        return movieRepository.findPopularMovies(pageRequest);
+    }
+
+
 }

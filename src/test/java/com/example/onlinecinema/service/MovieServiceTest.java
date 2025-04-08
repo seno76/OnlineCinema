@@ -101,7 +101,7 @@ public class MovieServiceTest {
         movie2.setTitle("The Dark Knight");
         List<Movie> movies = Arrays.asList(movie1, movie2);
 
-        when(movieRepository.findByTitleContaining("Inception")).thenReturn(Arrays.asList(movie1));
+        when(movieRepository.searchMoviesByTitle("Inception")).thenReturn(Arrays.asList(movie1));
 
         // Act
         List<Movie> result = movieService.searchMoviesByTitle("Inception");
@@ -109,6 +109,6 @@ public class MovieServiceTest {
         // Assert
         assertEquals(1, result.size());
         assertEquals("Inception", result.get(0).getTitle());
-        verify(movieRepository, times(1)).findByTitleContaining("Inception");
+        verify(movieRepository, times(1)).searchMoviesByTitle("Inception");
     }
 }

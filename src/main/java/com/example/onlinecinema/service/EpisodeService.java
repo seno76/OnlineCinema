@@ -2,7 +2,6 @@ package com.example.onlinecinema.service;
 
 import com.example.onlinecinema.model.Episode;
 import com.example.onlinecinema.repository.EpisodeRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,43 +11,38 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class EpisodeService {
+
     private final EpisodeRepository episodeRepository;
 
+    // Получение всех эпизодов
     public List<Episode> getAllEpisodes() {
         return episodeRepository.findAll();
     }
 
-    public List<Episode> getAllEpisodesByIdSeason(Long seasonId) {
-        return episodeRepository.findBySeasonId_SeasonId(seasonId);
+    // Сохранение эпизода
+    public Episode saveEpisode(Episode episode) {
+        return episodeRepository.save(episode);
     }
 
+    // Удаление эпизода по id
+    @Transactional
+    public void deleteEpisodeById(Long episodeId) {
+        episodeRepository.deleteById(episodeId);
+    }
+
+    // Удаление всех эпизодов из сезона
     @Transactional
     public void deleteAllEpisodesInSeason(Long seasonId) {
-        episodeRepository.deleteBySeasonId_SeasonId(seasonId);
+        episodeRepository.deleteBySeasonId(seasonId);
     }
 
-    public long countEpisodesForSeason(Long seasonId) {
-        return episodeRepository.countBySeasonId_SeasonId(seasonId);
+    // Перевод продолжительности фильма из минут в форматированный формат
+    public String toFormatDuration(int duration) {
+        return FormatDurations.getFormattedDuration(duration);
     }
 
-    public int countDurationForEpisodesInSeason(Long seasonId) {
-        Integer totalMinutes = episodeRepository.sumDurationBySeasonId(seasonId);
-        return totalMinutes != null ? totalMinutes : 0;
-    }
-
-    private String formatMinutesToHours(int totalMinutes) {
-        int hours = totalMinutes / 60;
-        int minutes = totalMinutes % 60;
-        return hours > 0 ? String.format("%d ч %d мин", hours, minutes) : String.format("%d мин", minutes);
-    }
-
-    public String getFormattedDurationForEpisode(Long episodeId) {
-        Episode episode = episodeRepository.findById(episodeId)
-                .orElseThrow(() -> new EntityNotFoundException("Эпизод не найден"));
-        return formatMinutesToHours(episode.getDuration());
-    }
-
-    public String getFormattedDurationForSeason(Long seasonId) {
-        return formatMinutesToHours(countDurationForEpisodesInSeason(seasonId));
+    // Проверка существует ли имя эпизода
+    public boolean isExistsByTitle(String title) {
+        return episodeRepository.existsByTitle(title);
     }
 }

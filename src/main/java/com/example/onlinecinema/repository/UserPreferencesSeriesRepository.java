@@ -2,12 +2,15 @@ package com.example.onlinecinema.repository;
 
 import com.example.onlinecinema.model.UserPreferencesSeries;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 
 @Repository
 public interface UserPreferencesSeriesRepository extends JpaRepository<UserPreferencesSeries, Long> {
-    int countBySeriesSeriesId(Long seriesId);
-    List<UserPreferencesSeries> findBySeriesSeriesId(Long seriesId);
+
+    // Количество пользователей добавивших сериал в беблиотеку избранного
+    @Query(value = "SELECT COUNT(*) FROM user_preferences_series WHERE series_id = :seriesId", nativeQuery = true)
+    int getUsersCountAddedToLibrary(Long seriesId);
+
 }

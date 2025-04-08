@@ -17,7 +17,7 @@ public class Season {
     private Long seasonId;
     @ManyToOne // Много сезонов могут относиться к одному сериалу
     @JoinColumn(name = "seriesId", nullable = false) // Ссылаемся на сериал
-    private Series seriesId;
+    private Series series;
     @Column(name = "number")
     private int number;
     @Column(name = "title")

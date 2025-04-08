@@ -30,6 +30,7 @@ public class UserService {
     }
 
     // Сохранение пользователя
+    @Transactional
     public User saveUser(User user) {
         return userRepository.save(user);
     }

@@ -46,7 +46,7 @@ class MovieServiceTest {
                 .thenReturn(List.of(new Movie(), new Movie()));
 
         // Act
-        List<Movie> result = movieService.getTopCartoon();
+        List<Movie> result = movieService.getTopCartoons(10);
 
         // Assert
         assertEquals(2, result.size());

@@ -17,6 +17,7 @@ public class SeriesController {
     @GetMapping
     public List<Series> getAllSeries() {
         return seriesService.getAllSeries();
+
     }
 
     @GetMapping("/{id}")
