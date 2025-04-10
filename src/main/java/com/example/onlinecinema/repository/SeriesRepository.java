@@ -4,7 +4,9 @@ import com.example.onlinecinema.model.Movie;
 import com.example.onlinecinema.model.Season;
 import com.example.onlinecinema.model.Series;
 import com.example.onlinecinema.model.User;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,6 +27,8 @@ public interface SeriesRepository extends JpaRepository<Series, Long> {
 
     // Для поиска сериалов, выпущенных после определенного года
     List<Series> findByYearGreaterThan(int year);
+
+    Page<Series> findAll(Pageable pageable);
 
     // Поиск сериалов по названию
     @Query("SELECT s FROM Series s WHERE LOWER(s.title) LIKE LOWER(CONCAT('%', :title, '%'))")

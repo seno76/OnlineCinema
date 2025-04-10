@@ -15,7 +15,7 @@ public class UserPreferencesController {
     private UserPreferencesService userPreferencesService;
 
     @GetMapping("/{userId}")
-    public List<UserPreferences> getUserLibrary(@PathVariable Long userId) {
+    public UserPreferences getUserLibrary(@PathVariable Long userId) {
         return userPreferencesService.getUserLibrary(userId);
     }
 

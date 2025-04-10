@@ -13,6 +13,9 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     // Вывод всех мультиков
     List<Movie> findByIsCartoonTrue();
 
+    // Вывод всех фильмов без мультиков
+    List<Movie> findByIsCartoonFalse();
+
     // Поиск фильмов по жанру
     List<Movie> findByGenreContainingIgnoreCase(String genre);
 

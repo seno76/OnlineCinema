@@ -2,41 +2,49 @@ package com.example.onlinecinema.controller;
 
 import com.example.onlinecinema.model.Series;
 import com.example.onlinecinema.service.SeriesService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/series")
+@RequiredArgsConstructor
 public class SeriesController {
 
-    @Autowired
-    private SeriesService seriesService;
+    private final SeriesService seriesService;
+    private final int PAGE_SIZE = 10;
 
     @GetMapping
-    public List<Series> getAllSeries() {
-        return seriesService.getAllSeries();
+    public String getAllSeries(
+            @RequestParam(defaultValue = "1") int page,
+            Model model) {
 
+        List<Series> series = seriesService.getAllSeries();
+        int totalItems = series.size();
+        List<Series> items = getPageItems(series, page);
+        int totalPages = (int) Math.ceil((double) totalItems / PAGE_SIZE);
+
+        model.addAttribute("items", items);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalItems", totalItems);
+
+        return "series";
     }
 
     @GetMapping("/{id}")
-    public Series getSeriesById(@PathVariable Long id) {
-        return seriesService.getSeriesById(id);
+    public String getSeriesById(@PathVariable Long id, Model model) {
+        model.addAttribute("series", seriesService.getSeriesById(id));
+        return "series-details";
     }
 
-    @PostMapping
-    public Series createSeries(@RequestBody Series series) {
-        return seriesService.saveSeries(series);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteSeries(@PathVariable Long id) {
-        seriesService.deleteSeries(id);
-    }
-
-    @GetMapping("/search")
-    public List<Series> searchSeries(@RequestParam String title) {
-        return seriesService.searchSeriesByTitle(title);
+    private <T> List<T> getPageItems(List<T> fullList, int page) {
+        return fullList.stream()
+                .skip((page - 1) * PAGE_SIZE)
+                .limit(PAGE_SIZE)
+                .toList();
     }
 }

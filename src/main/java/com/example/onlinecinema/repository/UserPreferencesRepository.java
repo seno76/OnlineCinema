@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface UserPreferencesRepository extends JpaRepository<UserPreferences, Long> {
-    List<UserPreferences> findByUserUserId(Long user); // Поиск записей в библиотеке пользователя
+    UserPreferences findByUserUserId(Long user); // Поиск записей в библиотеке пользователя
 
     // Получение среднего значения рейтинга сериалов в библиотеке пользователя
     @Query("""

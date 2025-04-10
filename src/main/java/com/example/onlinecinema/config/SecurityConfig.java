@@ -16,19 +16,22 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home", "/register", "/login", "/static/**").permitAll()
+                        .requestMatchers("/", "/home", "/register", "/login", "/static/**",
+                                "/movies", "/movies/**", "/series", "/series/**", "/search").permitAll()
+                        .requestMatchers("/profile", "/admin", "/create").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")  // Страница входа
-                        .loginProcessingUrl("/login")  // URL для обработки формы входа
-                        .defaultSuccessUrl("/profile", true)  // Перенаправление после успешного входа
-                        .failureUrl("/login?error=true")  // Перенаправление при ошибке
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/profile", true)
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")  // URL для выхода
-                        .logoutSuccessUrl("/")  // Перенаправление после выхода
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
+                        .deleteCookies("JSESSIONID")
                         .permitAll()
                 );
 

@@ -2,55 +2,76 @@ package com.example.onlinecinema.controller;
 
 import com.example.onlinecinema.model.Movie;
 import com.example.onlinecinema.service.MovieService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/movies")
+@RequiredArgsConstructor
 public class MovieController {
 
-    @Autowired
-    private MovieService movieService;
+    private final MovieService movieService;
+    private final int PAGE_SIZE = 10;
 
     @GetMapping
-    public List<Movie> getAllMovies() {
-        return movieService.getAllMovies();
+    public String getAllMovies(
+            @RequestParam(defaultValue = "1") int page,
+            Model model) {
+
+        List<Movie> movies = movieService.getAllMovies().stream()
+                .filter(movie -> !movie.isCartoon())
+                .toList();
+
+        int totalItems = movies.size();
+        List<Movie> items = getPageItems(movies, page);
+        int totalPages = (int) Math.ceil((double) totalItems / PAGE_SIZE);
+
+        model.addAttribute("items", items);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalItems", totalItems);
+
+        return "movies";
+    }
+
+    @GetMapping("/cartoon")
+    public String getAllCartoons(
+            @RequestParam(defaultValue = "1") int page,
+            Model model) {
+
+        List<Movie> cartoons = movieService.getAllCartoons();
+        int totalItems = cartoons.size();
+        List<Movie> items = getPageItems(cartoons, page);
+        int totalPages = (int) Math.ceil((double) totalItems / PAGE_SIZE);
+
+        model.addAttribute("items", items);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalItems", totalItems);
+
+        return "cartoons";
     }
 
     @GetMapping("/{id}")
-    public Movie getMovieById(@PathVariable Long id) {
-        return movieService.getMovieById(id);
+    public String getMovieById(@PathVariable Long id, Model model) {
+        model.addAttribute("movie", movieService.getMovieById(id));
+        return "movie-details";
     }
 
-    @PostMapping("/create")
-    public String createMovie(@RequestBody Movie movie) {
-        movieService.saveMovie(movie);
-        return "redirect:/";
+    @GetMapping("/cartoon/{id}")
+    public String getCartoonById(@PathVariable Long id, Model model) {
+        model.addAttribute("cartoon", movieService.getMovieById(id));
+        return "cartoon-details";
     }
 
-
-    @DeleteMapping("/{id}")
-    public void deleteMovie(@PathVariable Long id) {
-        movieService.deleteMovie(id);
-    }
-
-    @GetMapping("/cartoons/{id}")
-    public Movie getInfoForCartoon(@PathVariable Long id){
-        return movieService.getMovieById(id);
-    }
-
-    @GetMapping("/cartoons")
-    public List<Movie> viewCartoons(Model model) {
-        return movieService.getAllCartoons();
-    }
-
-
-    @GetMapping("/search")
-    public List<Movie> searchMovies(@RequestParam String title) {
-        return movieService.searchMoviesByTitle(title);
+    private <T> List<T> getPageItems(List<T> fullList, int page) {
+        return fullList.stream()
+                .skip((page - 1) * PAGE_SIZE)
+                .limit(PAGE_SIZE)
+                .toList();
     }
 }
-

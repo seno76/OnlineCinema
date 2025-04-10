@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Добро пожаловать</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 50px;
+        background-color: #f4f4f4;
+    }
+    .welcome-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 30px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .start-button {
+        display: inline-block;
+        padding: 15px 30px;
+        background-color: #4CAF50;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 18px;
+        margin-top: 20px;
+    }
+    .start-button:hover {
+        background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+<div class="welcome-container">
+  <h1>Добро пожаловать в Online Cinema!</h1>
+  <p>Лучшие фильмы, сериалы и мультфильмы в одном месте</p>
+  <a href="/movies" class="start-button">Начать просмотр</a>
+</div>
+</body>
+</html>

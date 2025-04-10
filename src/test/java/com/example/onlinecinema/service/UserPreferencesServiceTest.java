@@ -37,7 +37,7 @@ public class UserPreferencesServiceTest {
         when(userPreferencesRepository.findByUserId(1L)).thenReturn(preferences);
 
         // Act
-        List<UserPreferences> result = userPreferencesService.getUserLibrary(1L);
+        UserPreferences result = userPreferencesService.getUserLibrary(1L);
 
         // Assert
         assertEquals(2, result.size());

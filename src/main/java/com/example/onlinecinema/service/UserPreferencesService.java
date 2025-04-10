@@ -20,7 +20,7 @@ public class UserPreferencesService {
     private UserPreferencesRepository userPreferencesRepository;
 
     // Получение библиотеки пользователя по его id
-    public List<UserPreferences> getUserLibrary(Long userId) {
+    public UserPreferences getUserLibrary(Long userId) {
         return userPreferencesRepository.findByUserUserId(userId);
     }
 
@@ -91,5 +91,7 @@ public class UserPreferencesService {
     public String mostPopularGenreSeries(Long userId){
         return userPreferencesRepository.findMostWatchedSeriesGenre(userId);
     }
+
+
 
 }

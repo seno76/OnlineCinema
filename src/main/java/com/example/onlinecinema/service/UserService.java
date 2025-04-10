@@ -1,6 +1,5 @@
 package com.example.onlinecinema.service;
 
-import com.example.onlinecinema.model.Movie;
 import com.example.onlinecinema.model.User;
 import com.example.onlinecinema.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
