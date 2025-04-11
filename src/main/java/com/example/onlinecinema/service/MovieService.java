@@ -1,5 +1,7 @@
 package com.example.onlinecinema.service;
 
+import com.example.onlinecinema.dto.CreateMovieDto;
+import com.example.onlinecinema.dto.UpdateMovieDto;
 import com.example.onlinecinema.model.Movie;
 import com.example.onlinecinema.model.User;
 import com.example.onlinecinema.model.UserPreferences;
@@ -117,5 +119,50 @@ public class MovieService {
         return movieRepository.findPopularMovies(pageRequest);
     }
 
+    // -------------------------------------------------------------
 
+    public Movie createMovie(CreateMovieDto dto) {
+        // Проверка на дубликат названия (опционально)
+        if (movieRepository.existsByTitle(dto.title())) {
+            throw new IllegalStateException("Фильм с таким названием уже существует");
+        }
+
+        Movie movie = new Movie();
+        movie.setTitle(dto.title());
+        movie.setDescription(dto.description());
+        movie.setGenre(dto.genre());
+        movie.setYear(dto.year());
+        movie.setRating(dto.rating());
+        movie.setPosterUrl(dto.posterUrl());
+        movie.setMovieUrl(dto.movieUrl());
+        movie.setDuration(dto.duration());
+        movie.setCartoon(dto.isCartoon());
+        // createdAt устанавливается автоматически
+
+        return movieRepository.save(movie);
+    }
+
+    public Movie updateMovie(Long id, UpdateMovieDto dto) {
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Фильм не найден"));
+
+        // Проверка на дубликат названия (кроме текущего фильма)
+        if (!movie.getTitle().equals(dto.title()) &&
+                movieRepository.existsByTitle(dto.title())) {
+            throw new IllegalStateException("Фильм с таким названием уже существует");
+        }
+
+        movie.setMovieId(dto.movieId());
+        movie.setTitle(dto.title());
+        movie.setDescription(dto.description());
+        movie.setGenre(dto.genre());
+        movie.setYear(dto.year());
+        movie.setRating(dto.rating());
+        movie.setPosterUrl(dto.posterUrl());
+        movie.setMovieUrl(dto.movieUrl());
+        movie.setDuration(dto.duration());
+        movie.setCartoon(dto.isCartoon());
+
+        return movieRepository.save(movie);
+    }
 }

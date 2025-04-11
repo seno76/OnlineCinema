@@ -12,7 +12,7 @@ import java.util.*;
 @NoArgsConstructor
 public class Series {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "seriesId")
     private Long seriesId;
     @Column(name = "title")

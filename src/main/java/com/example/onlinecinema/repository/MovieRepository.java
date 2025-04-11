@@ -2,6 +2,8 @@ package com.example.onlinecinema.repository;
 
 import com.example.onlinecinema.model.Movie;
 import com.example.onlinecinema.model.User;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -53,4 +55,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     // Количество всего фильмов
     @Query(value = "SELECT COUNT(*) FROM Movie", nativeQuery = true)
     int getCountAllMovies();
+
+    boolean existsByTitle(@NotBlank(message = "Название обязательно") @Size(min = 1, max = 100, message = "Название должно быть от 1 до 100 символов") String title);
 }

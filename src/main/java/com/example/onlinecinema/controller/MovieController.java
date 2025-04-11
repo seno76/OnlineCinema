@@ -1,10 +1,14 @@
 package com.example.onlinecinema.controller;
 
+import com.example.onlinecinema.dto.CreateMovieDto;
+import com.example.onlinecinema.dto.UpdateMovieDto;
 import com.example.onlinecinema.model.Movie;
 import com.example.onlinecinema.service.MovieService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -74,4 +78,86 @@ public class MovieController {
                 .limit(PAGE_SIZE)
                 .toList();
     }
+    // ----------------------------------------------------------
+    @GetMapping("/create")
+    public String showCreateForm(Model model) {
+        model.addAttribute("movie", new CreateMovieDto(
+                "", "", "", 0, 0.0, "", "", 0, false
+        ));
+        return "movie-create";
+    }
+
+    @PostMapping("/create")
+    public String createMovie(
+            @Valid @ModelAttribute("movie") CreateMovieDto dto,
+            BindingResult bindingResult,
+            Model model) {
+
+        if (bindingResult.hasErrors()) {
+            // Важно: нужно снова добавить объект в модель
+            model.addAttribute("movie", dto);
+            return "movie-create";
+        }
+
+        movieService.createMovie(dto);
+        return "redirect:/movies";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        Movie movie = movieService.getMovieById(id);
+        model.addAttribute("movie", convertToDtoForUpdate(movie));
+        return "movie-edit";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String updateMovie(
+            @PathVariable Long id,
+            @Valid @ModelAttribute("movie") UpdateMovieDto dto,
+            BindingResult bindingResult,
+            Model model) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            return "movie-edit";
+        }
+
+        try {
+            movieService.updateMovie(id, dto);
+            return "redirect:/movies";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "movie-edit";
+        }
+    }
+
+    private UpdateMovieDto convertToDtoForUpdate(Movie movie) {
+        return new UpdateMovieDto(
+                movie.getMovieId(),
+                movie.getTitle(),
+                movie.getDescription(),
+                movie.getGenre(),
+                movie.getYear(),
+                movie.getRating(),
+                movie.getPosterUrl(),
+                movie.getMovieUrl(),
+                movie.getDuration(),
+                movie.isCartoon()
+        );
+    }
+
+    private CreateMovieDto convertToDto(Movie movie) {
+        return new CreateMovieDto(
+                movie.getTitle(),
+                movie.getDescription(),
+                movie.getGenre(),
+                movie.getYear(),
+                movie.getRating(),
+                movie.getPosterUrl(),
+                movie.getMovieUrl(),
+                movie.getDuration(),
+                movie.isCartoon()
+        );
+    }
+
 }
