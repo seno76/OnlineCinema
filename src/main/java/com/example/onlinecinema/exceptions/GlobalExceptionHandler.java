@@ -17,7 +17,8 @@ public class GlobalExceptionHandler {
     public String handleNotFound(NotFoundException ex, Model model) {
         model.addAttribute("errorTitle", "Фильм не найден");
         model.addAttribute("errorMessage", ex.getMessage());
-        return "error/error-page";
+        model.addAttribute("errorCode", HttpStatus.NOT_FOUND.value()); // 404
+        return "error-page";
     }
 
     // Обработка ошибок валидации
@@ -29,6 +30,7 @@ public class GlobalExceptionHandler {
                 ((BindException) ex).getBindingResult();
 
         model.addAttribute("errors", bindingResult.getAllErrors());
+        model.addAttribute("errorCode", HttpStatus.BAD_REQUEST.value());
         return "movie/movie-edit"; // или другая форма
     }
 
@@ -38,7 +40,8 @@ public class GlobalExceptionHandler {
     public String handleDuplicate(DuplicateException ex, Model model) {
         model.addAttribute("errorTitle", "Конфликт данных");
         model.addAttribute("errorMessage", ex.getMessage());
-        return "error/error-page";
+        model.addAttribute("errorCode", HttpStatus.CONFLICT.value());
+        return "error-page";
     }
 
     // Обработка всех остальных исключений
@@ -47,6 +50,27 @@ public class GlobalExceptionHandler {
     public String handleInternalError(Exception ex, Model model) {
         model.addAttribute("errorTitle", "Внутренняя ошибка сервера");
         model.addAttribute("errorMessage", "Произошла непредвиденная ошибка");
-        return "error/error-page";
+        model.addAttribute("errorCode", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return "error-page";
+    }
+
+    // Проверка что у пользователя есть права на выполнение операций
+    @ExceptionHandler(ForbiddenAccessException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public String handleForbidden(ForbiddenAccessException ex, Model model) {
+        model.addAttribute("errorTitle", "Доступ запрещён");
+        model.addAttribute("errorMessage", ex.getMessage());
+        model.addAttribute("errorCode", HttpStatus.FORBIDDEN.value());
+        return "error-page";
+    }
+
+    // Некорректные параметры запроса
+    @ExceptionHandler(InvalidDataException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleInvalidData(InvalidDataException ex, Model model) {
+        model.addAttribute("errorTitle", "Неверные данные");
+        model.addAttribute("errorMessage", ex.getMessage());
+        model.addAttribute("errorCode", HttpStatus.BAD_REQUEST.value());
+        return "error-page";
     }
 }

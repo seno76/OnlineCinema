@@ -2,14 +2,21 @@ package com.example.onlinecinema.controller;
 
 import com.example.onlinecinema.dto.CreateMovieDto;
 import com.example.onlinecinema.dto.UpdateMovieDto;
+import com.example.onlinecinema.exceptions.NotFoundException;
+import com.example.onlinecinema.exceptions.ValidationException;
 import com.example.onlinecinema.model.Movie;
+import com.example.onlinecinema.model.User;
 import com.example.onlinecinema.service.MovieService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -62,16 +69,17 @@ public class MovieController {
 
     @GetMapping("/{id}")
     public String getMovieById(@PathVariable Long id, Model model) {
-        model.addAttribute("movie", movieService.getMovieById(id));
+        Movie movie = movieService.getMovieById(id);
+        model.addAttribute("movie", movie);
         return "movie-details";
     }
 
     @GetMapping("/cartoon/{id}")
     public String getCartoonById(@PathVariable Long id, Model model) {
-        model.addAttribute("cartoon", movieService.getMovieById(id));
-        return "cartoon-details";
+        Movie cartoon = movieService.getMovieById(id);
+        model.addAttribute("cartoon", cartoon);
+        return "movie-details";
     }
-
 
     @GetMapping("/delete/{id}")
     public String deleteMovieById(@PathVariable Long id) {
@@ -85,7 +93,7 @@ public class MovieController {
                 .limit(PAGE_SIZE)
                 .toList();
     }
-    // ----------------------------------------------------------
+
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("movie", new CreateMovieDto(
@@ -101,12 +109,17 @@ public class MovieController {
             Model model) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("movie", dto);
+            model.addAttribute("errors", bindingResult.getAllErrors());
             return "movie-create";
         }
 
-        movieService.createMovie(dto);
-        return "redirect:/movies";
+        try {
+            movieService.createMovie(dto);
+            return "redirect:/movies";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "movie-create";
+        }
     }
 
     @GetMapping("/edit/{id}")
@@ -128,13 +141,8 @@ public class MovieController {
             return "movie-edit";
         }
 
-        try {
-            movieService.updateMovie(id, dto);
-            return "redirect:/movies";
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return "movie-edit";
-        }
+        movieService.updateMovie(id, dto);
+        return "redirect:/movies";
     }
 
     private UpdateMovieDto convertToDtoForUpdate(Movie movie) {
@@ -151,5 +159,4 @@ public class MovieController {
                 movie.isCartoon()
         );
     }
-
 }

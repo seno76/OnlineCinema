@@ -2,6 +2,7 @@ package com.example.onlinecinema.service;
 
 import com.example.onlinecinema.dto.CreateMovieDto;
 import com.example.onlinecinema.dto.UpdateMovieDto;
+import com.example.onlinecinema.exceptions.NotFoundException;
 import com.example.onlinecinema.model.Movie;
 import com.example.onlinecinema.model.User;
 import com.example.onlinecinema.model.UserPreferences;
@@ -36,6 +37,10 @@ public class MovieService {
 
     // Получение фильма по id
     public Movie getMovieById(Long id) {
+        Movie movie = movieRepository.findById(id).orElse(null);
+        if (movie == null) {
+            throw new NotFoundException("Фильм с ID " + id + " не найден!");
+        }
         return movieRepository.findById(id).orElse(null);
     }
 
@@ -58,6 +63,9 @@ public class MovieService {
     // Удаление фильма
     @Transactional
     public void deleteMovie(Long id) {
+        if (!movieRepository.existsById(id)) {
+            throw new NotFoundException("Фильм с ID " + id + " не найден!\n Удаление невозможно!");
+        }
         movieRepository.deleteById(id);
     }
 

@@ -57,4 +57,5 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     int getCountAllMovies();
 
     boolean existsByTitle(@NotBlank(message = "Название обязательно") @Size(min = 1, max = 100, message = "Название должно быть от 1 до 100 символов") String title);
+
 }
