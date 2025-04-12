@@ -4,6 +4,8 @@ import com.example.onlinecinema.model.Movie;
 import com.example.onlinecinema.model.Season;
 import com.example.onlinecinema.model.Series;
 import com.example.onlinecinema.model.User;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -61,4 +63,8 @@ public interface SeriesRepository extends JpaRepository<Series, Long> {
     // Количество всех сериалов
     @Query(value = "SELECT COUNT(*) FROM Series", nativeQuery = true)
     int getCountAllSeries();
+
+
+    boolean existsByTitle(@NotBlank(message = "Название обязательно") @Size(min = 1, max = 100, message = "Название должно быть от 1 до 100 символов") String title);
+
 }

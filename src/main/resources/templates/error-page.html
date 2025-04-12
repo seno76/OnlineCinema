@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${errorTitle}">Ошибка</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .error-container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        text-align: center;
+        max-width: 600px;
+        width: 100%;
+    }
+    .error-icon {
+        font-size: 48px;
+        margin-bottom: 20px;
+    }
+    .error-title {
+        font-size: 24px;
+        color: #d32f2f;
+        margin-bottom: 10px;
+    }
+    .error-message {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    .error-action {
+        margin-top: 20px;
+    }
+    .btn {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        display: inline-block;
+    }
+    .btn:hover {
+        background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+<div class="error-container">
+  <div class="error-icon">
+    <i class="fas fa-exclamation-circle"></i>
+  </div>
+  <h1 class="error-title" th:text="${errorTitle}">Ошибка</h1>
+  <p class="error-message" th:text="${errorMessage}">Сообщение об ошибке</p>
+  <div class="error-action">
+    <a href="/movies" class="btn">Вернуться к списку фильмов</a>
+  </div>
+</div>
+
+<!-- Подключаем Font Awesome для иконок -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</body>
+</html>

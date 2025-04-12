@@ -27,6 +27,8 @@ public class SearchController {
             @RequestParam(defaultValue = "1") int page,
             Model model) {
 
+        query = sanitizeSearchQuery(query);
+
         List<Movie> movies = movieService.searchMoviesByTitle(query).stream()
                 .filter(movie -> !movie.isCartoon())
                 .collect(Collectors.toList());
@@ -62,5 +64,10 @@ public class SearchController {
                 .skip((page - 1) * PAGE_SIZE)
                 .limit(PAGE_SIZE)
                 .collect(Collectors.toList());
+    }
+
+    private String sanitizeSearchQuery(String input) {
+        // Удаляем все, кроме букв, цифр и пробелов
+        return input.replaceAll("[^a-zA-Zа-яА-Я0-9\\s]", "");
     }
 }

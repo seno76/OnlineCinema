@@ -72,6 +72,13 @@ public class MovieController {
         return "cartoon-details";
     }
 
+
+    @GetMapping("/delete/{id}")
+    public String deleteMovieById(@PathVariable Long id) {
+        movieService.deleteMovie(id);
+        return "redirect:/movies";
+    }
+
     private <T> List<T> getPageItems(List<T> fullList, int page) {
         return fullList.stream()
                 .skip((page - 1) * PAGE_SIZE)
@@ -94,7 +101,6 @@ public class MovieController {
             Model model) {
 
         if (bindingResult.hasErrors()) {
-            // Важно: нужно снова добавить объект в модель
             model.addAttribute("movie", dto);
             return "movie-create";
         }
@@ -134,20 +140,6 @@ public class MovieController {
     private UpdateMovieDto convertToDtoForUpdate(Movie movie) {
         return new UpdateMovieDto(
                 movie.getMovieId(),
-                movie.getTitle(),
-                movie.getDescription(),
-                movie.getGenre(),
-                movie.getYear(),
-                movie.getRating(),
-                movie.getPosterUrl(),
-                movie.getMovieUrl(),
-                movie.getDuration(),
-                movie.isCartoon()
-        );
-    }
-
-    private CreateMovieDto convertToDto(Movie movie) {
-        return new CreateMovieDto(
                 movie.getTitle(),
                 movie.getDescription(),
                 movie.getGenre(),

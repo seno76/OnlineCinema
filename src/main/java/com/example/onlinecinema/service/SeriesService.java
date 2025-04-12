@@ -1,5 +1,10 @@
 package com.example.onlinecinema.service;
 
+import com.example.onlinecinema.dto.CreateMovieDto;
+import com.example.onlinecinema.dto.CreateSeriesDto;
+import com.example.onlinecinema.dto.UpdateMovieDto;
+import com.example.onlinecinema.dto.UpdateSeriesDto;
+import com.example.onlinecinema.model.Movie;
 import com.example.onlinecinema.model.Season;
 import com.example.onlinecinema.model.Series;
 import com.example.onlinecinema.model.User;
@@ -115,4 +120,48 @@ public class SeriesService {
         return FormatDurations.getFormattedDuration(duration);
     }
 
+
+    //
+    // -------------------------------------------------------------
+
+    public Series createSeries(CreateSeriesDto dto) {
+        // Проверка на дубликат названия (опционально)
+        if (seriesRepository.existsByTitle(dto.title())) {
+            throw new IllegalStateException("Сериал с таким названием уже существует");
+        }
+
+        Series series = new Series();
+        series.setTitle(dto.title());
+        series.setDescription(dto.description());
+        series.setGenre(dto.genre());
+        series.setYear(dto.year());
+        series.setRating(dto.rating());
+        series.setPosterUrl(dto.posterUrl());
+        series.setMovieUrl(dto.movieUrl());
+        // createdAt устанавливается автоматически
+
+        return seriesRepository.save(series);
+    }
+
+    public Series updateSeries(Long id, UpdateSeriesDto dto) {
+        Series series = seriesRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Сериал не найден"));
+
+        // Проверка на дубликат названия (кроме текущего фильма)
+        if (!series.getTitle().equals(dto.title()) &&
+                seriesRepository.existsByTitle(dto.title())) {
+            throw new IllegalStateException("Фильм с таким названием уже существует");
+        }
+
+        series.setSeriesId(dto.seriesId());
+        series.setTitle(dto.title());
+        series.setDescription(dto.description());
+        series.setGenre(dto.genre());
+        series.setYear(dto.year());
+        series.setRating(dto.rating());
+        series.setPosterUrl(dto.posterUrl());
+        series.setMovieUrl(dto.movieUrl());
+
+        return seriesRepository.save(series);
+    }
 }
