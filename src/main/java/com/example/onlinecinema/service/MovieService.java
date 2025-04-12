@@ -2,6 +2,7 @@ package com.example.onlinecinema.service;
 
 import com.example.onlinecinema.dto.CreateMovieDto;
 import com.example.onlinecinema.dto.UpdateMovieDto;
+import com.example.onlinecinema.exceptions.DuplicateException;
 import com.example.onlinecinema.exceptions.NotFoundException;
 import com.example.onlinecinema.model.Movie;
 import com.example.onlinecinema.model.User;
@@ -93,10 +94,11 @@ public class MovieService {
 
     // Получение фильмов по жанру
     public List<Movie> getMoviesByGenre(String genre) {
+
         return movieRepository.findByGenreContainingIgnoreCase(genre);
     }
 
-    // Получение фильмов по продолжительности в диапозоне
+    // Получение фильмов по продолжительности в диапазоне
     public List<Movie> getMoviesByDuration(int minMinutes, int maxMinutes) {
         return movieRepository.findByDurationBetween(minMinutes, maxMinutes);
     }
@@ -132,7 +134,7 @@ public class MovieService {
     public Movie createMovie(CreateMovieDto dto) {
         // Проверка на дубликат названия (опционально)
         if (movieRepository.existsByTitle(dto.title())) {
-            throw new IllegalStateException("Фильм с таким названием уже существует");
+            throw new DuplicateException("Фильм с таким названием уже существует");
         }
 
         Movie movie = new Movie();
@@ -152,12 +154,12 @@ public class MovieService {
 
     public Movie updateMovie(Long id, UpdateMovieDto dto) {
         Movie movie = movieRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Фильм не найден"));
+                .orElseThrow(() -> new NotFoundException("Фильм не найден"));
 
         // Проверка на дубликат названия (кроме текущего фильма)
         if (!movie.getTitle().equals(dto.title()) &&
                 movieRepository.existsByTitle(dto.title())) {
-            throw new IllegalStateException("Фильм с таким названием уже существует");
+            throw new DuplicateException("Фильм с таким названием уже существует");
         }
 
         movie.setMovieId(dto.movieId());

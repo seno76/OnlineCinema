@@ -4,6 +4,8 @@ import com.example.onlinecinema.dto.CreateMovieDto;
 import com.example.onlinecinema.dto.CreateSeriesDto;
 import com.example.onlinecinema.dto.UpdateMovieDto;
 import com.example.onlinecinema.dto.UpdateSeriesDto;
+import com.example.onlinecinema.exceptions.DuplicateException;
+import com.example.onlinecinema.exceptions.NotFoundException;
 import com.example.onlinecinema.model.Movie;
 import com.example.onlinecinema.model.Season;
 import com.example.onlinecinema.model.Series;
@@ -14,7 +16,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.module.FindException;
 import java.util.List;
+import java.util.stream.Stream;
 
 
 @Service
@@ -43,13 +47,20 @@ public class SeriesService {
 
     // Сохранение сериала
     @Transactional
-    public Series saveSeries(Series series) {
+    public Series saveSeries(Series series) {;
+        String title = series.getTitle();
+        if (seriesRepository.existsByTitle(title)) {
+            throw new DuplicateException("Сериал с названием: " + title + "уже существует");
+        }
         return seriesRepository.save(series);
     }
 
     // Удаление сериала
     @Transactional
     public void deleteSeries(Long id) {
+        if (!seriesRepository.existsById(id)) {
+            throw new NotFoundException("Сериал с ID " + id + " не найден!\n Удаление невозможно!");
+        }
         seriesRepository.deleteById(id);
     }
 
@@ -127,7 +138,7 @@ public class SeriesService {
     public Series createSeries(CreateSeriesDto dto) {
         // Проверка на дубликат названия (опционально)
         if (seriesRepository.existsByTitle(dto.title())) {
-            throw new IllegalStateException("Сериал с таким названием уже существует");
+            throw new DuplicateException("Сериал с таким названием уже существует");
         }
 
         Series series = new Series();
@@ -145,12 +156,12 @@ public class SeriesService {
 
     public Series updateSeries(Long id, UpdateSeriesDto dto) {
         Series series = seriesRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Сериал не найден"));
+                .orElseThrow(() -> new NotFoundException("Сериал не найден"));
 
         // Проверка на дубликат названия (кроме текущего фильма)
         if (!series.getTitle().equals(dto.title()) &&
                 seriesRepository.existsByTitle(dto.title())) {
-            throw new IllegalStateException("Фильм с таким названием уже существует");
+            throw new DuplicateException("Сериал с таким названием уже существует");
         }
 
         series.setSeriesId(dto.seriesId());

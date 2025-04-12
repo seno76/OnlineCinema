@@ -1,5 +1,7 @@
 package com.example.onlinecinema.service;
 
+import com.example.onlinecinema.exceptions.InvalidDataException;
+import com.example.onlinecinema.exceptions.NotFoundException;
 import com.example.onlinecinema.model.User;
 import com.example.onlinecinema.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,8 @@ public class UserService {
 
     // Получение пользователя по Id
     public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь с ID " + id + " не найден"));
     }
 
     // Сохранение пользователя
@@ -37,17 +40,28 @@ public class UserService {
     // Удаление пользователя
     @Transactional
     public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new NotFoundException("Пользователь с ID " + id + " не найден");
+        }
         userRepository.deleteById(id);
     }
 
     // Поиск по имени пользователя
     public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isEmpty()) {
+            throw new NotFoundException("Пользователь с именем " + username + " не найден");
+        }
+        return user;
     }
 
     // Получение всех пользователей
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        List<User> users = userRepository.findAll();
+        if (users.isEmpty()) {
+            throw new NotFoundException("Не найдено ни одного пользователя");
+        }
+        return users;
     }
 
     // Изменение пароля
@@ -81,13 +95,18 @@ public class UserService {
     // Дополнительные полезные методы
     @Transactional
     public void updateEmailVerificationStatus(Long userId, boolean verified) {
-        userRepository.findById(userId).ifPresent(user -> {
-            user.setEmailVerified(verified);
-            userRepository.save(user);
-        });
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с ID " + userId + " не найден"));
+
+        user.setEmailVerified(verified);
+        userRepository.save(user);
     }
 
+    // Проверка существования email
     public boolean existsByEmail(String email) {
+        if (email == null || !email.contains("@")) {
+            throw new InvalidDataException("Некорректный формат email");
+        }
         return userRepository.existsByEmail(email);
     }
 }

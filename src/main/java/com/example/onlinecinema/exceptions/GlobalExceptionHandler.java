@@ -54,7 +54,7 @@ public class GlobalExceptionHandler {
         return "error-page";
     }
 
-    // Проверка что у пользователя есть права на выполнение операций
+    // Проверка, что у пользователя есть права на выполнение операций
     @ExceptionHandler(ForbiddenAccessException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public String handleForbidden(ForbiddenAccessException ex, Model model) {

@@ -2,21 +2,14 @@ package com.example.onlinecinema.controller;
 
 import com.example.onlinecinema.dto.CreateMovieDto;
 import com.example.onlinecinema.dto.UpdateMovieDto;
-import com.example.onlinecinema.exceptions.NotFoundException;
-import com.example.onlinecinema.exceptions.ValidationException;
 import com.example.onlinecinema.model.Movie;
-import com.example.onlinecinema.model.User;
 import com.example.onlinecinema.service.MovieService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
