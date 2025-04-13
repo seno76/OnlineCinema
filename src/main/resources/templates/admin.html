@@ -2,371 +2,308 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Профиль пользователя | Онлайн Кинотеатр</title>
   <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    .tabs {
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      min-height: 100vh;
       display: flex;
-      margin-bottom: 20px;
+      flex-direction: column;
+    }
+
+    /* Стили для шапки (как в главной) */
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .auth-buttons {
+      display: flex;
       gap: 10px;
+      align-items: center;
     }
-    .tabs button {
-      padding: 10px 15px;
-      cursor: pointer;
-      background: #f0f0f0;
-      border: 1px solid #ddd;
-      border-radius: 5px 5px 0 0;
+
+    .profile-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+      text-decoration: none;
     }
-    .tabs button:hover {
-      background: #e0e0e0;
+
+    .profile-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
     }
-    .tab-content {
-      display: none;
+
+    /* Основной контейнер */
+    .main-container {
+      display: flex;
+      flex: 1;
+      margin-top: 60px;
+    }
+
+    /* Боковая панель профиля */
+    .profile-sidebar {
+      width: 300px;
+      background-color: #fff;
       padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 0 5px 5px 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 60px;
+      height: calc(100vh - 60px);
+      overflow-y: auto;
     }
-    .tab-content.active {
-      display: block;
+
+    .profile-header {
+      text-align: center;
+      margin-bottom: 20px;
     }
-    .card {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-      border: 1px solid #eee;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
+    .profile-avatar-large {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 15px;
+      border: 3px solid #4CAF50;
     }
-    .card h3 {
-      margin-top: 0;
+
+    .profile-info {
+      margin-bottom: 30px;
+    }
+
+    .profile-info h2 {
       color: #333;
+      margin-bottom: 5px;
+      text-align: center;
     }
-    form {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
+
+    .profile-info p {
+      color: #666;
+      text-align: center;
+      margin: 5px 0;
     }
-    form label {
+
+    .settings-form {
+      margin-top: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
       display: block;
       margin-bottom: 5px;
-      font-weight: bold;
+      color: #333;
     }
-    form input[type="text"],
-    form input[type="number"],
-    form input[type="url"],
-    form textarea,
-    form select {
+
+    .form-group input {
       width: 100%;
       padding: 8px;
       border: 1px solid #ddd;
       border-radius: 4px;
     }
-    form textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-    .full-width {
-      grid-column: span 2;
-    }
-    button[type="submit"] {
-      grid-column: span 2;
-      padding: 10px;
-      background: #4CAF50;
+
+    .save-btn {
+      background-color: #4CAF50;
       color: white;
       border: none;
+      padding: 10px 15px;
       border-radius: 4px;
       cursor: pointer;
+      width: 100%;
     }
-    button[type="submit"]:hover {
-      background: #45a049;
+
+    .save-btn:hover {
+      background-color: #45a049;
     }
-    .error {
-      color: red;
-      margin-top: 5px;
+
+    /* Основное содержимое - библиотека фильмов */
+    .profile-content {
+      flex: 1;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+
+    .library-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .library-header h2 {
+      color: #333;
+    }
+
+    .movie-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .movie-card {
+      background-color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+
+    .movie-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .movie-poster {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+    }
+
+    .movie-info {
+      padding: 15px;
+    }
+
+    .movie-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    .movie-meta {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .empty-library {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+      }
+
+      .profile-sidebar {
+        width: 100%;
+        position: static;
+        height: auto;
+      }
+
+      .profile-content {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-<h1>Административная панель</h1>
-
-<div class="tabs">
-  <button onclick="openTab('movies')">Фильмы</button>
-  <button onclick="openTab('series')">Сериалы</button>
-  <button onclick="openTab('seasons')">Сезоны</button>
-  <button onclick="openTab('episodes')">Эпизоды</button>
-  <button onclick="openTab('users')">Пользователи</button>
-  <button onclick="openTab('preferences')">Предпочтения</button>
-</div>
-
-<!-- Фильмы -->
-<div id="movies" class="tab-content active">
-  <div class="card">
-    <h3>Добавить фильм</h3>
-    <form th:action="@{/admin/movies}" method="post" th:object="${movie}">
-      <div class="full-width">
-        <label for="movieTitle">Название*</label>
-        <input type="text" id="movieTitle" th:field="*{title}" required>
-      </div>
-
-      <div class="full-width">
-        <label for="movieDescription">Описание</label>
-        <textarea id="movieDescription" th:field="*{description}"></textarea>
-      </div>
-
-      <div>
-        <label for="movieGenre">Жанр</label>
-        <input type="text" id="movieGenre" th:field="*{genre}">
-      </div>
-
-      <div>
-        <label for="movieYear">Год*</label>
-        <input type="number" id="movieYear" th:field="*{year}" min="1900" max="2025" required>
-      </div>
-
-      <div>
-        <label for="movieRating">Рейтинг</label>
-        <input type="number" id="movieRating" th:field="*{rating}" step="0.1" min="0" max="10">
-      </div>
-
-      <div>
-        <label for="moviePoster">Постер (URL)</label>
-        <input type="url" id="moviePoster" th:field="*{posterUrl}">
-      </div>
-
-      <div>
-        <label for="movieUrl">Видео (URL)*</label>
-        <input type="url" id="movieUrl" th:field="*{movieUrl}" required>
-      </div>
-
-      <div>
-        <label for="movieDuration">Длительность (мин)*</label>
-        <input type="number" id="movieDuration" th:field="*{duration}" min="1" required>
-      </div>
-
-      <div>
-        <label>
-          <input type="checkbox" th:field="*{isCartoon}"> Мультфильм
-        </label>
-      </div>
-
-      <button type="submit">Сохранить фильм</button>
+<header>
+  <h1>ONLINE CINEMA</h1>
+  <div class="auth-buttons">
+    <form th:action="@{/movies}">
+      <button type="submit">На главную</button>
+    </form>
+    <form th:action="@{/logout}" method="post">
+      <button type="submit">Выйти</button>
     </form>
   </div>
-</div>
+</header>
 
-<!-- Сериалы -->
-<div id="series" class="tab-content">
-  <div class="card">
-    <h3>Добавить сериал</h3>
-    <form th:action="@{/admin/series}" method="post" th:object="${series}">
-      <div class="full-width">
-        <label for="seriesTitle">Название*</label>
-        <input type="text" id="seriesTitle" th:field="*{title}" required>
+<!-- Основной контейнер -->
+<div class="main-container">
+  <!-- Боковая панель профиля -->
+  <div class="profile-sidebar">
+    <div class="profile-header">
+      <img alt="Аватар" class="profile-avatar-large">
+      <div class="profile-info">
+        <h2 th:text="${user.username}">Имя пользователя</h2>
+        <p>Участник с: <span th:text="${#temporals.format(user.createdAt, 'dd.MM.yyyy')}">01.01.2023</span></p>
+        <p>Фильмов в библиотеке: <span th:text="0">0</span></p>
       </div>
+    </div>
 
-      <div class="full-width">
-        <label for="seriesDescription">Описание</label>
-        <textarea id="seriesDescription" th:field="*{description}"></textarea>
-      </div>
-
-      <div>
-        <label for="seriesGenre">Жанр</label>
-        <input type="text" id="seriesGenre" th:field="*{genre}">
-      </div>
-
-      <div>
-        <label for="seriesYear">Год*</label>
-        <input type="number" id="seriesYear" th:field="*{year}" min="1900" max="2025" required>
-      </div>
-
-      <div>
-        <label for="seriesRating">Рейтинг</label>
-        <input type="number" id="seriesRating" th:field="*{rating}" step="0.1" min="0" max="10">
-      </div>
-
-      <div>
-        <label for="seriesPoster">Постер (URL)</label>
-        <input type="url" id="seriesPoster" th:field="*{posterUrl}">
-      </div>
-
-      <div>
-        <label for="seriesMovieUrl">Видео (URL)</label>
-        <input type="url" id="seriesMovieUrl" th:field="*{movieUrl}">
-      </div>
-
-      <button type="submit">Сохранить сериал</button>
-    </form>
+    <div class="settings-form">
+      <h3>Настройки профиля</h3>
+      <form th:action="@{/admin/update}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="username">Имя пользователя</label>
+          <input type="text" id="username" name="username" th:value="${user.username}">
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" th:value="${user.email}">
+        </div>
+        <div class="form-group">
+          <label for="password">Новый пароль (оставьте пустым, если не хотите менять)</label>
+          <input type="password" id="password" name="password">
+        </div>
+        <div class="form-group">
+          <label for="avatar">Аватар</label>
+          <input type="file" id="avatar" name="avatar" accept="image/*">
+        </div>
+        <button type="submit" class="save-btn">Сохранить изменения</button>
+      </form>
+    </div>
   </div>
+
+  <!-- Основное содержимое - библиотека фильмов -->
+  <!--  <div class="profile-content">-->
+  <!--    <div class="library-header">-->
+  <!--      <h2>Моя библиотека</h2>-->
+  <!--      <div class="sort-options">-->
+  <!--        <select>-->
+  <!--          <option>Сортировать по дате добавления</option>-->
+  <!--          <option>Сортировать по названию</option>-->
+  <!--          <option>Сортировать по рейтингу</option>-->
+  <!--        </select>-->
+  <!--      </div>-->
+  <!--    </div>-->
+
+  <!--    <div class="movie-grid">-->
+  <!--      &lt;!&ndash; Карточка фильма 1 &ndash;&gt;-->
+  <!--      <div class="movie-card" th:each="movie : ${movies}">-->
+  <!--        <img th:src="${movie.posterUrl}" alt="Постер фильма" class="movie-poster">-->
+  <!--        <div class="movie-info">-->
+  <!--          <div class="movie-title" th:text="${movie.title}">Название фильма</div>-->
+  <!--          <div class="movie-meta">-->
+  <!--            <span th:text="${movie.genre}">Жанр</span> |-->
+  <!--            <span th:text="${movie.year}">Год</span>-->
+  <!--          </div>-->
+  <!--          <div class="movie-meta" th:text="'Рейтинг: ' + ${movie.rating}">Рейтинг: 8.5</div>-->
+  <!--        </div>-->
+  <!--      </div>-->
+
+  <!--      &lt;!&ndash; Сообщение если библиотека пуста &ndash;&gt;-->
+  <!--      <div th:if="${movies.empty}" class="empty-library">-->
+  <!--        <p>Ваша библиотека пуста. <a href="/">Начните добавлять фильмы!</a></p>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </div>-->
 </div>
 
-<!-- Сезоны -->
-<div id="seasons" class="tab-content">
-  <div class="card">
-    <h3>Добавить сезон</h3>
-    <form th:action="@{/admin/seasons}" method="post" th:object="${season}">
-      <div class="full-width">
-        <label for="seasonSeries">Сериал*</label>
-        <select id="seasonSeries" th:field="*{series}" required>
-          <option value="">Выберите сериал</option>
-          <option th:each="s : ${seriesList}"
-                  th:value="${s.seriesId}"
-                  th:text="${s.title + ' (' + s.year + ')'}"></option>
-        </select>
-      </div>
-
-      <div>
-        <label for="seasonNumber">Номер сезона*</label>
-        <input type="number" id="seasonNumber" th:field="*{number}" min="1" required>
-      </div>
-
-      <div>
-        <label for="seasonTitle">Название сезона</label>
-        <input type="text" id="seasonTitle" th:field="*{title}">
-      </div>
-
-      <button type="submit">Сохранить сезон</button>
-    </form>
-  </div>
-</div>
-
-<!-- Эпизоды -->
-<div id="episodes" class="tab-content">
-  <div class="card">
-    <h3>Добавить эпизод</h3>
-    <form th:action="@{/admin/episodes}" method="post" th:object="${episode}">
-      <div class="full-width">
-        <label for="episodeSeason">Сезон*</label>
-        <select id="episodeSeason" th:field="*{season}" required>
-          <option value="">Выберите сезон</option>
-          <option th:each="s : ${seasons}"
-                  th:value="${s.seasonId}"
-                  th:text="'Сезон ' + s.number + ' - ' + s.series.title"></option>
-        </select>
-      </div>
-
-      <div>
-        <label for="episodeTitle">Название*</label>
-        <input type="text" id="episodeTitle" th:field="*{title}" required>
-      </div>
-
-      <div class="full-width">
-        <label for="episodeDescription">Описание</label>
-        <textarea id="episodeDescription" th:field="*{description}"></textarea>
-      </div>
-
-      <div>
-        <label for="episodeDuration">Длительность (мин)*</label>
-        <input type="number" id="episodeDuration" th:field="*{duration}" min="1" required>
-      </div>
-
-      <div>
-        <label for="episodeVideoUrl">Видео (URL)*</label>
-        <input type="url" id="episodeVideoUrl" th:field="*{videoUrl}" required>
-      </div>
-
-      <button type="submit">Сохранить эпизод</button>
-    </form>
-  </div>
-</div>
-
-<!-- Пользователи -->
-<div id="users" class="tab-content">
-  <div class="card">
-    <h3>Добавить пользователя</h3>
-    <form th:action="@{/admin/users}" method="post" th:object="${user}">
-      <div>
-        <label for="userUsername">Логин*</label>
-        <input type="text" id="userUsername" th:field="*{username}" required>
-      </div>
-
-      <div>
-        <label for="userPassword">Пароль*</label>
-        <input type="password" id="userPassword" th:field="*{password}" required>
-      </div>
-
-      <div>
-        <label for="userEmail">Email*</label>
-        <input type="email" id="userEmail" th:field="*{email}" required>
-      </div>
-
-      <div>
-        <label for="userRole">Роль*</label>
-        <select id="userRole" th:field="*{role}" required>
-          <option th:each="r : T(com.example.onlinecinema.model.User.Role).values()"
-                  th:value="${r}"
-                  th:text="${r.name()}"></option>
-        </select>
-      </div>
-
-      <div>
-        <label>
-          <input type="checkbox" th:field="*{emailVerified}"> Email подтвержден
-        </label>
-      </div>
-
-      <button type="submit">Сохранить пользователя</button>
-    </form>
-  </div>
-</div>
-
-<!-- Предпочтения пользователей -->
-<div id="preferences" class="tab-content">
-  <div class="card">
-    <h3>Добавить предпочтения</h3>
-    <form th:action="@{/admin/preferences}" method="post" th:object="${userPreferences}">
-      <div class="full-width">
-        <label for="prefUser">Пользователь*</label>
-        <select id="prefUser" th:field="*{user}" required>
-          <option value="">Выберите пользователя</option>
-          <option th:each="u : ${users}"
-                  th:value="${u.id}"
-                  th:text="${u.username + ' (' + u.email + ')'}"></option>
-        </select>
-      </div>
-
-      <div class="full-width">
-        <label>Любимые фильмы</label>
-        <select multiple th:field="*{movies}">
-          <option th:each="m : ${movies}"
-                  th:value="${m.movieId}"
-                  th:text="${m.title + ' (' + m.year + ')'}"></option>
-        </select>
-      </div>
-
-      <div class="full-width">
-        <label>Любимые сериалы</label>
-        <select multiple th:field="*{series}">
-          <option th:each="s : ${seriesList}"
-                  th:value="${s.seriesId}"
-                  th:text="${s.title + ' (' + s.year + ')'}"></option>
-        </select>
-      </div>
-
-      <button type="submit">Сохранить предпочтения</button>
-    </form>
-  </div>
-</div>
-
-<script>
-  function openTab(tabName) {
-    const tabs = document.querySelectorAll('.tab-content');
-    tabs.forEach(tab => tab.classList.remove('active'));
-    document.getElementById(tabName).classList.add('active');
-
-    // Сохраняем выбранную вкладку в URL
-    history.pushState(null, null, '#' + tabName);
-  }
-
-  // При загрузке страницы активируем вкладку из URL
-  document.addEventListener('DOMContentLoaded', function() {
-    if (window.location.hash) {
-      const tabName = window.location.hash.substring(1);
-      openTab(tabName);
-    }
-  });
-</script>
 </body>
 </html>

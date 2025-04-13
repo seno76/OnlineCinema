@@ -1,38 +1,76 @@
 package com.example.onlinecinema.config;
 
+import com.example.onlinecinema.exceptions.GlobalExceptionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home", "/register", "/login", "/static/**",
-                                "/movies", "/movies/**", "/series", "/series/**", "/search").permitAll()
-                        .requestMatchers("/profile", "/admin", "/create").authenticated()
+                        // Статические ресурсы и публичные эндпоинты
+                        .requestMatchers(
+                                "/",
+                                "/home",
+                                "/register",
+                                "/login",
+                                "/static/**",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/error"
+                        ).permitAll()
+
+                        // Эндпоинты для аутентифицированных пользователей (USER или ADMIN)
+                        .requestMatchers(
+                                "/profile/**",
+                                "/library/**"
+                        ).hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+
+                        // Эндпоинты только для администраторов
+                        .requestMatchers(
+                                "/admin/**",
+                                "/movies/create",
+                                "/movies/edit/**",
+                                "/movies/delete/**",
+                                "/series/create",
+                                "/series/edit/**",
+                                "/series/delete/**",
+                                "/users/**"
+                        ).hasAuthority("ROLE_ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/profile", true)
-                        .failureUrl("/login?error=true")
+                        .successHandler(authenticationSuccessHandler())
+                        .failureHandler(authenticationFailureHandler())
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login")
+                        .logoutSuccessUrl("/login?logout")
                         .deleteCookies("JSESSIONID")
+                        .invalidateHttpSession(true)
                         .permitAll()
+                )
+                .exceptionHandling(handling -> handling
+                        .accessDeniedHandler(new GlobalExceptionHandler())
                 );
 
         return http.build();
@@ -41,5 +79,20 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return (request, response, authentication) -> {
+            response.sendRedirect("/profile");
+        };
+    }
+
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        return (request, response, exception) -> {
+            request.getSession().setAttribute("error", "Неверный логин или пароль");
+            response.sendRedirect("/login?error=true");
+        };
     }
 }

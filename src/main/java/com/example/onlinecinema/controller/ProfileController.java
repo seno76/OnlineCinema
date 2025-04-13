@@ -35,4 +35,6 @@ public class ProfileController {
             return "redirect:/login?error";  // или показать страницу ошибки
         }
     }
+
+
 }
