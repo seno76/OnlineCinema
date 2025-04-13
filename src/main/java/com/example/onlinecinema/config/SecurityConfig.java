@@ -1,6 +1,5 @@
 package com.example.onlinecinema.config;
 
-import com.example.onlinecinema.exceptions.GlobalExceptionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -70,7 +69,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .exceptionHandling(handling -> handling
-                        .accessDeniedHandler(new GlobalExceptionHandler())
+                        .accessDeniedPage("/access-denied")
                 );
 
         return http.build();
