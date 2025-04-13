@@ -33,7 +33,7 @@ public class UserRepositoryTest {
         User savedUser = userRepository.save(user);
 
         // Проверяем, что объект сохранен
-        assertNotNull(savedUser.getId());
+        assertNotNull(savedUser.getUserId());
         assertEquals("testuser", savedUser.getUsername());
     }
 
@@ -45,7 +45,7 @@ public class UserRepositoryTest {
         entityManager.persist(user);
 
         // Ищем объект по ID
-        User foundUser = userRepository.findById(user.getId()).orElse(null);
+        User foundUser = userRepository.findById(user.getUserId()).orElse(null);
 
         // Проверяем, что объект найден
         assertNotNull(foundUser);

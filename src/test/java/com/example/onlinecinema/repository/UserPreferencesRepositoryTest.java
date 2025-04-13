@@ -37,7 +37,7 @@ public class UserPreferencesRepositoryTest {
 
         // Проверяем, что объект сохранен
         assertNotNull(savedPreferences.getUserPreferencesId());
-        assertEquals(user.getId(), savedPreferences.getUser().getId());
+        assertEquals(user.getUserId(), savedPreferences.getUser().getUserId());
     }
 
     @Test
@@ -57,6 +57,6 @@ public class UserPreferencesRepositoryTest {
 
         // Проверяем, что объект найден
         assertNotNull(foundPreferences);
-        assertEquals(user.getId(), foundPreferences.getUser().getId());
+        assertEquals(user.getUserId(), foundPreferences.getUser().getUserId());
     }
 }

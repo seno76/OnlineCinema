@@ -34,7 +34,7 @@ class UserPreferencesServiceIntegrationTest {
         preferences.setUser(user);
         userPreferencesService.addToLibrary(preferences);
 
-        UserPreferences saved = userPreferencesRepository.findByUserId(user.getId()).get(0);
-        assertEquals(user.getId(), saved.getUser().getId());
+        UserPreferences saved = userPreferencesRepository.findByUserUserId(user.getUserId());
+        assertEquals(user.getUserId(), saved.getUser().getUserId());
     }
 }

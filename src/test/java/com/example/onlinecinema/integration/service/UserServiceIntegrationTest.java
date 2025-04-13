@@ -33,10 +33,10 @@ class UserServiceIntegrationTest {
         userRepository.save(user);
 
         // Act
-        boolean result = userService.changePassword(user.getId(), "oldpass", "newpass");
+        boolean result = userService.changePassword(user.getUserId(), "oldpass", "newpass");
 
         // Assert
         assertTrue(result);
-        assertTrue(passwordEncoder.matches("newpass", userRepository.findById(user.getId()).get().getPassword()));
+        assertTrue(passwordEncoder.matches("newpass", userRepository.findById(user.getUserId()).get().getPassword()));
     }
 }

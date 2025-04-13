@@ -32,7 +32,7 @@ public class EpisodeRepositoryTest {
         Season season = new Season();
         season.setNumber(1);
         season.setTitle("Первый сезон");
-        season.setSeriesId(series); // Используем setSeriesId вместо setSeries
+        season.setSeries(series);
         entityManager.persist(season);
 
         // Создаем объект Episode
@@ -41,7 +41,7 @@ public class EpisodeRepositoryTest {
         episode.setDescription("Первый эпизод");
         episode.setDuration(60);
         episode.setVideoUrl("http://example.com/episode1.mp4");
-        episode.setSeasonId(season); // Используем setSeasonId вместо setSeason
+        episode.setSeason(season);
         episode.setCreatedAt(LocalDateTime.now());
 
         // Сохраняем в базу данных
@@ -63,13 +63,13 @@ public class EpisodeRepositoryTest {
         Season season = new Season();
         season.setNumber(1);
         season.setTitle("Первый сезон");
-        season.setSeriesId(series); // Используем setSeriesId вместо setSeries
+        season.setSeries(series);
         entityManager.persist(season);
 
         // Создаем и сохраняем объект Episode
         Episode episode = new Episode();
         episode.setTitle("Зима близко");
-        episode.setSeasonId(season); // Используем setSeasonId вместо setSeason
+        episode.setSeason(season); // Используем setSeasonId вместо setSeason
         entityManager.persist(episode);
 
         // Ищем объект по ID

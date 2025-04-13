@@ -30,7 +30,7 @@ public class UserServiceTest {
     public void testGetUserById() {
         // Arrange
         User user = new User();
-        user.setId(1L);
+        user.setUserId(1L);
         user.setUsername("john_doe");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));

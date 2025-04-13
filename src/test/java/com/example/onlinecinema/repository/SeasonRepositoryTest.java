@@ -31,7 +31,7 @@ public class SeasonRepositoryTest {
         Season season = new Season();
         season.setNumber(1);
         season.setTitle("Первый сезон");
-        season.setSeriesId(series); // Используем setSeriesId вместо setSeries
+        season.setSeries(series);
         season.setCreatedAt(LocalDateTime.now());
 
         // Сохраняем в базу данных
@@ -53,7 +53,7 @@ public class SeasonRepositoryTest {
         Season season = new Season();
         season.setNumber(1);
         season.setTitle("Первый сезон");
-        season.setSeriesId(series); // Используем setSeriesId вместо setSeries
+        season.setSeries(series);
         entityManager.persist(season);
 
         // Ищем объект по ID

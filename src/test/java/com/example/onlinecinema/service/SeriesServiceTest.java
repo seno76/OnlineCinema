@@ -102,7 +102,7 @@ public class SeriesServiceTest {
         series2.setTitle("Game of Thrones");
         List<Series> seriesList = Arrays.asList(series1, series2);
 
-        when(seriesRepository.findByTitleContaining("Breaking")).thenReturn(Arrays.asList(series1));
+        when(seriesRepository.searchSeriesByTitle("Breaking")).thenReturn(Arrays.asList(series1));
 
         // Act
         List<Series> result = seriesService.searchSeriesByTitle("Breaking");
@@ -110,6 +110,6 @@ public class SeriesServiceTest {
         // Assert
         assertEquals(1, result.size());
         assertEquals("Breaking Bad", result.get(0).getTitle());
-        verify(seriesRepository, times(1)).findByTitleContaining("Breaking");
+        verify(seriesRepository, times(1)).searchSeriesByTitle("Breaking");
     }
 }

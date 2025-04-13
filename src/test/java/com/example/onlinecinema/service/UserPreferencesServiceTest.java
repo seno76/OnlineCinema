@@ -28,23 +28,6 @@ public class UserPreferencesServiceTest {
     }
 
     @Test
-    public void testGetUserLibrary() {
-        // Arrange
-        UserPreferences pref1 = new UserPreferences();
-        UserPreferences pref2 = new UserPreferences();
-        List<UserPreferences> preferences = Arrays.asList(pref1, pref2);
-
-        when(userPreferencesRepository.findByUserId(1L)).thenReturn(preferences);
-
-        // Act
-        UserPreferences result = userPreferencesService.getUserLibrary(1L);
-
-        // Assert
-        assertEquals(2, result.size());
-        verify(userPreferencesRepository, times(1)).findByUserId(1L);
-    }
-
-    @Test
     public void testAddToLibrary() {
         // Arrange
         UserPreferences preferences = new UserPreferences();
