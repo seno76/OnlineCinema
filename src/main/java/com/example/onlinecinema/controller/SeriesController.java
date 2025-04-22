@@ -4,8 +4,14 @@ import com.example.onlinecinema.dto.CreateMovieDto;
 import com.example.onlinecinema.dto.CreateSeriesDto;
 import com.example.onlinecinema.dto.UpdateMovieDto;
 import com.example.onlinecinema.dto.UpdateSeriesDto;
+import com.example.onlinecinema.exceptions.NotFoundException;
+import com.example.onlinecinema.model.Episode;
 import com.example.onlinecinema.model.Movie;
+import com.example.onlinecinema.model.Season;
 import com.example.onlinecinema.model.Series;
+import com.example.onlinecinema.repository.SeasonRepository;
+import com.example.onlinecinema.service.EpisodeService;
+import com.example.onlinecinema.service.SeasonService;
 import com.example.onlinecinema.service.SeriesService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +20,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/series")
@@ -22,6 +30,7 @@ import java.util.List;
 public class SeriesController {
 
     private final SeriesService seriesService;
+    private final EpisodeService episodeService;
     private final int PAGE_SIZE = 10;
 
     @GetMapping
@@ -44,7 +53,37 @@ public class SeriesController {
 
     @GetMapping("/{id}")
     public String getSeriesById(@PathVariable Long id, Model model) {
-        model.addAttribute("series", seriesService.getSeriesById(id));
+        // Получаем сериал по ID
+        Series series = seriesService.getSeriesById(id);
+        if (series == null) {
+            throw new NotFoundException("Сериал с ID " + id + " не найден");
+        }
+
+        // Получаем все сезоны для этого сериала
+        List<Season> seasons = seriesService.getAllSeasonsForSeries(id);
+
+        // Создаем карту, где ключ - ID сезона, значение - список эпизодов
+        Map<Long, List<Episode>> episodesBySeason = new HashMap<>();
+
+        // Для каждого сезона получаем эпизоды и добавляем в карту
+        for (Season season : seasons) {
+            List<Episode> episodes = episodeService.getAllEpisodesBySeasonId(season.getSeasonId());
+            episodesBySeason.put(season.getSeasonId(), episodes);
+        }
+        System.out.println(episodesBySeason);
+
+        // Добавляем атрибуты в модель
+        model.addAttribute("series", series);
+        model.addAttribute("seasons", seasons);
+        model.addAttribute("episodesBySeason", episodesBySeason);
+
+        // Если есть хотя бы один сезон, добавляем первый сезон и его эпизоды как активные
+        if (!seasons.isEmpty()) {
+            Long firstSeasonId = seasons.get(0).getSeasonId();
+            model.addAttribute("activeSeasonId", firstSeasonId);
+            model.addAttribute("activeEpisodes", episodesBySeason.get(firstSeasonId));
+        }
+
         return "series-details";
     }
 

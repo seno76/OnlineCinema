@@ -6,10 +6,7 @@ import com.example.onlinecinema.dto.UpdateMovieDto;
 import com.example.onlinecinema.dto.UpdateSeriesDto;
 import com.example.onlinecinema.exceptions.DuplicateException;
 import com.example.onlinecinema.exceptions.NotFoundException;
-import com.example.onlinecinema.model.Movie;
-import com.example.onlinecinema.model.Season;
-import com.example.onlinecinema.model.Series;
-import com.example.onlinecinema.model.User;
+import com.example.onlinecinema.model.*;
 import com.example.onlinecinema.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +23,7 @@ public class SeriesService {
 
     @Autowired
     private SeriesRepository seriesRepository;
+    private SeasonService seasonService;
 
     @Autowired
     private UserPreferencesSeriesRepository userPreferencesSeriesRepository;
@@ -69,6 +67,7 @@ public class SeriesService {
         return seriesRepository.searchSeriesByTitle(title);
     }
 
+
     // Вывод количества сезонов для сериала
     public int getCountSeasonsForSeries(Long seriesId) {
         return seriesRepository.getCountSeasonsForSeries(seriesId);
@@ -103,6 +102,11 @@ public class SeriesService {
     // Поиск сериалов по конкретному году
     public List<Series> getSeriesByYear(int year) {
         return seriesRepository.findByYear(year);
+    }
+
+    // Получение всех сезонов
+    public List<Season> getSeasons(Long seriesId) {
+        return seasonService.getAllSeasonsForSeries(seriesId);
     }
 
     // Поиск сериалов, выпущенных после определенного года

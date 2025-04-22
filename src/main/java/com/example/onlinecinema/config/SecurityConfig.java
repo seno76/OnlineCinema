@@ -30,7 +30,10 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
-                                "/error"
+                                "/error",
+                                "/movies",
+                                "/series",
+                                "/movies/cartoon"
                         ).permitAll()
 
                         // Эндпоинты для аутентифицированных пользователей (USER или ADMIN)

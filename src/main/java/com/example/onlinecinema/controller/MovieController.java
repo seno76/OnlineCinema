@@ -6,10 +6,12 @@ import com.example.onlinecinema.model.Movie;
 import com.example.onlinecinema.service.MovieService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -63,6 +65,9 @@ public class MovieController {
     @GetMapping("/{id}")
     public String getMovieById(@PathVariable Long id, Model model) {
         Movie movie = movieService.getMovieById(id);
+        if (movie == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Movie not found");
+        }
         model.addAttribute("movie", movie);
         return "movie-details";
     }
@@ -70,7 +75,7 @@ public class MovieController {
     @GetMapping("/cartoon/{id}")
     public String getCartoonById(@PathVariable Long id, Model model) {
         Movie cartoon = movieService.getMovieById(id);
-        model.addAttribute("cartoon", cartoon);
+        model.addAttribute("movie", cartoon);
         return "movie-details";
     }
 

@@ -16,6 +16,9 @@ public interface SeasonRepository extends JpaRepository<Season, Long> {
     @Query("SELECT e FROM Episode e WHERE e.season.seasonId = :seasonId")
     List<Episode> getAllEpisodesForSeason(Long seasonId);
 
+    @Query("SELECT s FROM Season s WHERE s.series.seriesId = :seriesId")
+    List<Season> getAllSeasonsForSeries(Long seriesId);
+
     // Получение количества эпизодов по заданному сезону
     @Query(value = "SELECT COUNT(*) FROM Episode WHERE season.season_id = :seasonId", nativeQuery = true)
     int getCountEpisodesForSeason(Long season);

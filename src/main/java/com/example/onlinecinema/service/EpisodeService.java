@@ -19,6 +19,11 @@ public class EpisodeService {
         return episodeRepository.findAll();
     }
 
+    // Получение всех эпизодов по заданному сезону
+    public List<Episode> getAllEpisodesBySeasonId(Long seasonId){
+        return episodeRepository.getAllEpisodesForSeason(seasonId);
+    }
+
     // Сохранение эпизода
     public Episode saveEpisode(Episode episode) {
         return episodeRepository.save(episode);

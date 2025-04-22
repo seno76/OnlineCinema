@@ -19,6 +19,8 @@ public class Episode {
     private Season season;
     @Column(name = "title")
     private String title;
+    @Column(name = "number")
+    private Integer number; // Номер серии в сезоне
     @Column(name = "description", columnDefinition = "text")
     private String description;
     @Column(name = "duration")
@@ -27,4 +29,6 @@ public class Episode {
     private String videoUrl;
     @Column(name = "createdAt")
     private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "previewUrl")
+    private String previewUrl;
 }

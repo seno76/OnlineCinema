@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${series.title} + ' | Онлайн Кинотеатр'">Сериал | Онлайн Кинотеатр</title>
+    <style>
+        /* Основные стили остаются без изменений */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .auth-button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: white;
+            background-color: #4CAF50;
+        }
+        .auth-button:hover {
+            background-color: #45a049;
+        }
+        .profile-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+        }
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: #444;
+            padding: 10px;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+        }
+        nav a:hover {
+            background-color: #555;
+            border-radius: 4px;
+        }
+        nav a.active {
+            background-color: #4CAF50;
+            border-radius: 4px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .series-details {
+            display: flex;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        .poster-section {
+            width: 300px;
+            padding: 20px;
+            text-align: center;
+            border-right: 1px solid #eee;
+        }
+        .poster-section img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+        .rating {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 15px 0;
+        }
+        .info-section {
+            flex: 1;
+            padding: 30px;
+        }
+        .series-title {
+            font-size: 28px;
+            margin: 0 0 10px;
+            color: #333;
+        }
+        .series-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        .series-meta span {
+            display: flex;
+            align-items: center;
+        }
+        .series-meta i {
+            margin-right: 5px;
+            color: #4CAF50;
+        }
+        .series-description {
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .back-button:hover {
+            background-color: #45a049;
+        }
+        .player-section {
+            background: #222;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        .player-placeholder {
+            background: #000;
+            color: #fff;
+            text-align: center;
+            padding: 60px 0;
+            border-radius: 4px;
+        }
+        .genre-badge {
+            display: inline-block;
+            background-color: #e0f7fa;
+            color: #00838f;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        /* Стили для сезонов и серий */
+        .season-selector {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .season-button {
+            padding: 8px 16px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .season-button:hover {
+            background-color: #444;
+        }
+        .season-button.active {
+            background-color: #4CAF50;
+        }
+        .episodes-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .episodes-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 10px 0;
+            scrollbar-width: thin;
+            scrollbar-color: #4CAF50 #333;
+        }
+        .episodes-scroll::-webkit-scrollbar {
+            height: 8px;
+        }
+        .episodes-scroll::-webkit-scrollbar-track {
+            background: #333;
+            border-radius: 4px;
+        }
+        .episodes-scroll::-webkit-scrollbar-thumb {
+            background-color: #4CAF50;
+            border-radius: 4px;
+        }
+        .episode-card {
+            flex: 0 0 160px;
+            height: 90px;
+            background-color: #333;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .episode-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+        }
+        .episode-card.active {
+            border: 2px solid #4CAF50;
+        }
+        .episode-number {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            text-align: center;
+            padding: 5px;
+            font-weight: bold;
+        }
+        .episode-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .no-episodes {
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<header>
+    <h1>ONLINE CINEMA</h1>
+    <div class="auth-buttons">
+        <!-- Кнопки входа/регистрации -->
+        <div th:unless="${#authorization.expression('isAuthenticated()')}">
+            <a href="/login" class="auth-button">Войти</a>
+            <a href="/register" class="auth-button">Регистрация</a>
+        </div>
+
+        <!-- Профиль пользователя -->
+        <div th:if="${#authorization.expression('isAuthenticated()')}">
+            <a href="/profile" class="profile-button">
+                <img th:src="@{/images/main.png}" alt="Аватар" class="profile-avatar">
+                <span th:text="${#authentication.principal.username}"></span>
+            </a>
+        </div>
+    </div>
+</header>
+
+<nav>
+    <a href="/movies">ФИЛЬМЫ</a>
+    <a href="/series" class="active">СЕРИАЛЫ</a>
+    <a href="/movies/cartoon">МУЛЬТФИЛЬМЫ</a>
+</nav>
+
+<div class="container">
+    <div class="series-details">
+        <div class="poster-section">
+            <img th:src="${series.posterUrl}" alt="Постер сериала" th:unless="${series.posterUrl == null}">
+            <img src="/images/no-poster.jpg" alt="Нет постера" th:if="${series.posterUrl == null}">
+            <div class="rating">
+                <i class="fas fa-star" style="color: #FFD700;"></i>
+                <span th:text="${series.rating}">0.0</span>/10
+            </div>
+            <div>
+                <span class="genre-badge" th:text="${series.genre}">Жанр</span>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h1 class="series-title" th:text="${series.title}">Название сериала</h1>
+
+            <div class="series-meta">
+                <span><i class="fas fa-calendar-alt"></i> <span th:text="${series.year}">2023</span></span>
+                <span><i class="fas fa-tv"></i> <span th:text="${seasons.size()} + ' сезонов'">1 сезон</span></span>
+            </div>
+
+            <div class="series-description" th:text="${series.description}">
+                Описание сериала будет здесь. Это может быть длинный текст с описанием сюжета,
+                актерского состава и другой информацией о сериале.
+            </div>
+
+            <a href="/series" class="back-button">
+                <i class="fas fa-arrow-left"></i> Назад к сериалам
+            </a>
+        </div>
+    </div>
+
+    <div class="player-section">
+        <h2 style="color: #fff; margin-top: 0;">ПРОСМОТР СЕРИАЛА</h2>
+
+        <!-- Блок выбора сезона -->
+        <div class="season-selector" th:if="${not seasons.empty}">
+            <h3 style="color: #fff; margin: 0 10px 0 0;">Сезон:</h3>
+            <div>
+                <button th:each="season : ${seasons}"
+                        class="season-button"
+                        th:classappend="${season.seasonId == activeSeasonId} ? 'active'"
+                        th:onclick="|loadEpisodes(${season.seasonId})|"
+                        th:text="'Сезон ' + ${season.number}">
+                    Сезон 1
+                </button>
+            </div>
+        </div>
+
+        <!-- Блок с сериями -->
+        <div class="episodes-container" th:if="${not seasons.empty}">
+            <div class="episodes-scroll" id="episodesScroll">
+                <div class="episode-card"
+                     th:each="episode : ${activeEpisodes}"
+                     th:attr="data-episode-id=${episode.episodeId}, data-episode-title=${episode.title}">
+                    <img th:if="${episode.previewUrl}" th:src="${episode.previewUrl}" class="episode-preview">
+                    <img th:unless="${episode.previewUrl}" src="/images/no-preview.jpg" class="episode-preview">
+                    <div class="episode-number" th:text="'Серия ' + ${episode.number}">Серия 1</div>
+                </div>
+
+                <div class="no-episodes" th:if="${activeEpisodes.empty}">
+                    В этом сезоне пока нет серий
+                </div>
+            </div>
+        </div>
+
+        <!-- Сообщение, если нет сезонов -->
+        <div class="no-episodes" th:if="${seasons.empty}">
+            У этого сериала пока нет сезонов
+        </div>
+
+        <!-- Плеер -->
+        <div class="player-placeholder">
+            <i class="fas fa-play-circle" style="font-size: 48px; color: #4CAF50;"></i>
+            <p>Плеер сериала</p>
+            <p>
+                <span th:text="${series.title}">Название сериала</span> -
+                <span id="currentEpisodeInfo" th:if="${not seasons.empty and not activeEpisodes.empty}">
+                        Сезон <span th:text="${activeSeason != null ? activeSeason.number : 'N/A'}">1</span>,
+                        Серия <span th:text="${activeEpisodes[0].number}">1</span>
+                </span>
+                <span th:unless="${not seasons.empty and not activeEpisodes.empty}">
+                    Выберите серию для просмотра
+                </span>
+            </p>
+            <div id="videoContainer">
+                <p th:if="${not seasons.empty and not activeEpisodes.empty}">
+                    Готово к воспроизведению:
+                    <span th:text="${activeEpisodes[0].title}">Название серии</span>
+                </p>
+                <p th:unless="${not seasons.empty and not activeEpisodes.empty}">
+                    Выберите серию для просмотра
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Загрузка эпизодов выбранного сезона
+    function loadEpisodes(seasonId) {
+        // Здесь должна быть логика AJAX-запроса для загрузки эпизодов
+        // В данном примере просто обновляем активный сезон
+        window.location.href = window.location.pathname + '?season=' + seasonId;
+    }
+
+    // Воспроизведение выбранной серии
+    function playEpisode(episodeId, episodeTitle) {
+        // Удаляем активный класс у всех карточек
+        document.querySelectorAll('.episode-card').forEach(c => {
+            c.classList.remove('active');
+        });
+
+        // Добавляем активный класс текущей карточке
+        event.currentTarget.classList.add('active');
+
+        // Обновляем информацию о текущей серии
+        const seasonNumber = document.querySelector('.season-button.active').textContent.replace('Сезон ', '');
+        document.getElementById('currentEpisodeInfo').innerHTML =
+            `Сезон ${seasonNumber}, Серия ${event.currentTarget.querySelector('.episode-number').textContent.replace('Серия ', '')}`;
+
+        // Обновляем плеер
+        document.getElementById('videoContainer').innerHTML = `
+            <p>Загрузка: ${episodeTitle}</p>
+            <!-- Здесь будет реальный плеер -->
+        `;
+
+        // Здесь должна быть логика загрузки видео
+        console.log('Загрузка серии ID:', episodeId);
+    }
+</script>
+</body>
+</html>

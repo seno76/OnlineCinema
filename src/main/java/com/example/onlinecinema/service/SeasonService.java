@@ -39,6 +39,11 @@ public class SeasonService {
         return seasonRepository.getCountEpisodesForSeason(seasonId);
     }
 
+    // Возвращение всех сезонов для данного сериала
+    public List<Season> getAllSeasonsForSeries(Long seriesId) {
+        return seasonRepository.getAllSeasonsForSeries(seriesId);
+    }
+
     // Вывод сезона по id
     public Season getSeasonById(Long id) {
         return seasonRepository.findById(id).orElse(null);

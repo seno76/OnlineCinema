@@ -1,10 +1,240 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${movie.title} + ' | Онлайн Кинотеатр'">Фильм | Онлайн Кинотеатр</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .auth-button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: white;
+            background-color: #4CAF50;
+        }
+        .auth-button:hover {
+            background-color: #45a049;
+        }
+        .profile-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+        }
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: #444;
+            padding: 10px;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+        }
+        nav a:hover {
+            background-color: #555;
+            border-radius: 4px;
+        }
+        nav a.active {
+            background-color: #4CAF50;
+            border-radius: 4px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .movie-details {
+            display: flex;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        .poster-section {
+            width: 300px;
+            padding: 20px;
+            text-align: center;
+            border-right: 1px solid #eee;
+        }
+        .poster-section img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+        .rating {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 15px 0;
+        }
+        .info-section {
+            flex: 1;
+            padding: 30px;
+        }
+        .movie-title {
+            font-size: 28px;
+            margin: 0 0 10px;
+            color: #333;
+        }
+        .movie-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        .movie-meta span {
+            display: flex;
+            align-items: center;
+        }
+        .movie-meta i {
+            margin-right: 5px;
+            color: #4CAF50;
+        }
+        .movie-description {
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .back-button:hover {
+            background-color: #45a049;
+        }
+        .player-section {
+            background: #222;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        .player-placeholder {
+            background: #000;
+            color: #fff;
+            text-align: center;
+            padding: 60px 0;
+            border-radius: 4px;
+        }
+        .genre-badge {
+            display: inline-block;
+            background-color: #e0f7fa;
+            color: #00838f;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+<header>
+    <h1>ONLINE CINEMA</h1>
+    <div class="auth-buttons">
+        <!-- Кнопки входа/регистрации -->
+        <div th:unless="${#authorization.expression('isAuthenticated()')}">
+            <a href="/login" class="auth-button">Войти</a>
+            <a href="/register" class="auth-button">Регистрация</a>
+        </div>
 
+        <!-- Профиль пользователя -->
+        <div th:if="${#authorization.expression('isAuthenticated()')}">
+            <a href="/profile" class="profile-button">
+                <img th:src="@{/images/main.png}" alt="Аватар" class="profile-avatar">
+                <span th:text="${#authentication.principal.username}"></span>
+            </a>
+        </div>
+    </div>
+</header>
+
+<nav>
+    <a href="/movies" class="active">ФИЛЬМЫ</a>
+    <a href="/series">СЕРИАЛЫ</a>
+    <a href="/movies/cartoon">МУЛЬТФИЛЬМЫ</a>
+</nav>
+
+<div class="container">
+    <div class="movie-details">
+        <div class="poster-section">
+            <img th:src="${movie.posterUrl}" alt="Постер фильма" th:unless="${movie.posterUrl == null}">
+            <img src="/images/no-poster.jpg" alt="Нет постера" th:if="${movie.posterUrl == null}">
+            <div class="rating">
+                <i class="fas fa-star" style="color: #FFD700;"></i>
+                <span th:text="${movie.rating}">0.0</span>/10
+            </div>
+            <div>
+                <span class="genre-badge" th:text="${movie.genre}">Жанр</span>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h1 class="movie-title" th:text="${movie.title}">Название фильма</h1>
+
+            <div class="movie-meta">
+                <span><i class="fas fa-calendar-alt"></i> <span th:text="${movie.year}">2023</span></span>
+                <span><i class="fas fa-clock"></i> <span th:text="${movie.duration} + ' мин.'">120 мин.</span></span>
+            </div>
+
+            <div class="movie-description" th:text="${movie.description}">
+                Описание фильма будет здесь. Это может быть длинный текст с описанием сюжета,
+                актерского состава и другой информацией о фильме.
+            </div>
+
+            <a href="/movies" class="back-button">
+                <i class="fas fa-arrow-left"></i> Назад к фильмам
+            </a>
+        </div>
+    </div>
+
+    <div class="player-section">
+        <h2 style="color: #fff; margin-top: 0;">ПРОСМОТР ФИЛЬМА</h2>
+        <div class="player-placeholder">
+            <i class="fas fa-play-circle" style="font-size: 48px; color: #4CAF50;"></i>
+            <p>Плеер фильма</p>
+            <p th:text="${movie.title}">Название фильма</p>
+            <div th:if="${movie.movieUrl}">
+                <!-- Здесь будет реальный плеер, например Video.js или другой -->
+                <p>URL видео: <span th:text="${movie.movieUrl}"></span></p>
+            </div>
+            <div th:unless="${movie.movieUrl}">
+                <p>Видео недоступно</p>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
