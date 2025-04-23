@@ -222,18 +222,16 @@
 
     <div class="player-section">
         <h2 style="color: #fff; margin-top: 0;">ПРОСМОТР ФИЛЬМА</h2>
-        <div class="player-placeholder">
-            <i class="fas fa-play-circle" style="font-size: 48px; color: #4CAF50;"></i>
-            <p>Плеер фильма</p>
-            <p th:text="${movie.title}">Название фильма</p>
-            <div th:if="${movie.movieUrl}">
-                <!-- Здесь будет реальный плеер, например Video.js или другой -->
-                <p>URL видео: <span th:text="${movie.movieUrl}"></span></p>
-            </div>
-            <div th:unless="${movie.movieUrl}">
-                <p>Видео недоступно</p>
-            </div>
-        </div>
+        <video
+                id="movie-player"
+                class="video-js vjs-big-play-centered"
+                controls
+                preload="auto"
+                width="100%"
+                height="450"
+                data-setup='{}'>
+            <source th:src="${movie.movieUrl}" type="video/mp4" />
+        </video>
     </div>
 </div>
 </body>
